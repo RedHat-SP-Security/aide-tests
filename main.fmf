@@ -1,2 +1,3 @@
 component:
   - aide
+framework: beakerlib
