@@ -2,7 +2,6 @@ summary: Tests if aide properly handles default rules
 description: ''
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
-path: /aide/Sanity/aide-rules-test
 recommend:
 - aide
 - attr

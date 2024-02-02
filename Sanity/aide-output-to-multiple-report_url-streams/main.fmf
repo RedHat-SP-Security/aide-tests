@@ -9,7 +9,6 @@ description: |
       file descriptor
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
-path: /aide/Sanity/aide-output-to-multiple-report_url-streams
 recommend:
   - aide
   - coreutils
