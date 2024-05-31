@@ -37,7 +37,7 @@ rlJournalStart
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
-	rlRun "echo -e '@@define DBDIR /var/lib/aide\nfoo' > aide.conf"
+	    rlRun "echo -e '@@define DBDIR /var/lib/aide\nfoo' > aide.conf"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking the default /etc/aide.conf should succeed"
@@ -47,16 +47,18 @@ rlJournalStart
 
     rlPhaseStartTest "Checking the faulty configuration file"
         rlRun -s "aide -D -c $TmpDir/aide.conf" 17
-	rlAssertGrep "2:syntax error" $rlRun_LOG
-	rlAssertGrep "2:Error while reading configuration:" $rlRun_LOG
-	rlAssertGrep "Configuration error" $rlRun_LOG
+        rlRun "cat $rlRun_LOG"
+        rlAssertGrep "2:syntax error" $rlRun_LOG
+        rlAssertGrep "2:Error while reading configuration:" $rlRun_LOG
+        rlAssertGrep "Configuration error" $rlRun_LOG
     rlPhaseEnd
 
     rlPhaseStartTest "Passing non-existing filepath"
-        rlRun -s "aide -D -c /nosuchfile" 17
-	rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E
-	rlAssertGrep "No config defined" $rlRun_LOG
-	rlAssertGrep "Configuration error" $rlRun_LOG
+        rlRun -s "aide -D -c /nosuchfile" 18
+        rlRun "cat $rlRun_LOG"
+        rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E
+        rlAssertGrep "No config defined" $rlRun_LOG
+        rlAssertGrep "Configuration error" $rlRun_LOG
     rlPhaseEnd
 
     rlPhaseStartCleanup

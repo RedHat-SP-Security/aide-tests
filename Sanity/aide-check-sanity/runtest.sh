@@ -31,6 +31,7 @@
 . /usr/share/beakerlib/beakerlib.sh || exit 1
 
 PACKAGE="aide"
+AIDE_CONF=aide.conf
 
 rlJournalStart && {
   rlPhaseStartSetup && {
@@ -38,6 +39,9 @@ rlJournalStart && {
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
       rlRun "rlFileBackup --clean /root/aide/"
       rlRun "mkdir -p /root/aide/{,data,db,log}"
+        if rlIsRHELLike "=<9"; then
+            AIDE_CONF=aide_rhel_9.conf
+        fi
       cat > /root/aide/aide.conf <<EOF
 syslog_format=yes
 
@@ -65,7 +69,7 @@ NORMAL = R+sha256
 # files to watch
 /root/aide/data   p+u+g+sha256
 EOF
-
+      rlRUn "mv $AIDE_CONF /root/aide/"
       rlRun "touch /root/aide/data/empty_file"
       rlRun "echo 'x' > /root/aide/data/file1"
       rlRun "echo 'y' > /root/aide/data/file2"

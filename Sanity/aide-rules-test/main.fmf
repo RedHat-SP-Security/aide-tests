@@ -9,5 +9,9 @@ recommend:
 - e2fsprogs
 duration: 15m
 enabled: true
+adjust:
+-   enabled: false
+    when: distro >= rhel-10
+    continue: false
 tier: '1'
 extra-task: /CoreOS/aide/Sanity/aide-rules-test
