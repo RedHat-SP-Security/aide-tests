@@ -10,7 +10,8 @@ tag:
 - TierCandidatesPASS
 extra-summary: SYSLOG_FORMAT=true /CoreOS/aide/Sanity/aide-rules-test
 extra-nitrate: TC#0544948
-adjust:
+adjust+:
 -   enabled: false
     when: distro < rhel-6
     continue: false
+
