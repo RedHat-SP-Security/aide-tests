@@ -15,5 +15,9 @@ recommend:
   - rsyslog
 duration: 5m
 enabled: true
+adjust:
+-   enabled: false
+    when: distro >= rhel-10
+    continue: false
 tier: '1'
 extra-task: /CoreOS/aide/Sanity/aide-output-to-multiple-report_url-streams

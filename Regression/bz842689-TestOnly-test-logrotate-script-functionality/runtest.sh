@@ -33,9 +33,17 @@
 PACKAGE="aide"
 AIDE_CONFIG="/etc/aide.conf"
 AIDE_LOG="/var/log/aide/aide.log"
+AIDE_FIRST_CONF=aide_first.conf
+AIDE_SECOND_CONF=aide_second.conf
+
+
 
 rlJournalStart
     rlPhaseStartSetup
+        if rlIsRHELLike "=<9"; then
+            AIDE_FIRST_CONF=aide_rhel_9.conf
+            AIDE_SECOND_CONF=aide_rhel_9.conf
+        fi
         rlAssertRpm $PACKAGE
         rlFileBackup $AIDE_CONFIG
         rlFileBackup --clean /var/lib/aide
@@ -45,11 +53,11 @@ rlJournalStart
 
         # Init the aide db twice with different config files
         # (will cause   aide --check   to log differences to log file)
-        rlRun "cp aide_first.conf $AIDE_CONFIG"
+        rlRun "cp $AIDE_FIRST_CONF $AIDE_CONFIG"
         rlRun "aide --init"
         rlAssertExists "/var/lib/aide/aide.db.new.gz"
         rlRun "mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz"
-        rlRun "cp aide_second.conf $AIDE_CONFIG"
+        rlRun "cp $AIDE_SECOND_CONF $AIDE_CONFIG"
         rlRun "aide --init"
     rlPhaseEnd
 
