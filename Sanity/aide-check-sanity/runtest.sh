@@ -41,35 +41,9 @@ rlJournalStart && {
       rlRun "mkdir -p /root/aide/{,data,db,log}"
         if rlIsRHELLike "=<9"; then
             AIDE_CONF=aide_rhel_9.conf
+
         fi
-      cat > /root/aide/aide.conf <<EOF
-syslog_format=yes
-
-@@define DBDIR /root/aide/db
-@@define LOGDIR /root/aide/log
-
-# The location of the database to be read.
-database=file:@@{DBDIR}/aide.db.gz
-
-# The location of the database to be written.
-database_out=file:@@{DBDIR}/aide.db.out.gz
-
-# Whether to gzip the output to database
-gzip_dbout=yes
-
-# Default.
-verbose=5
-
-report_url=file:@@{LOGDIR}/aide.log
-report_url=stdout
-
-#R:             p+i+n+u+g+s+m+c+acl+selinux+xattrs+md5
-NORMAL = R+sha256
-
-# files to watch
-/root/aide/data   p+u+g+sha256
-EOF
-      rlRUn "mv $AIDE_CONF /root/aide/"
+      rlRun "mv $AIDE_CONF /root/aide/aide.conf"
       rlRun "touch /root/aide/data/empty_file"
       rlRun "echo 'x' > /root/aide/data/file1"
       rlRun "echo 'y' > /root/aide/data/file2"
