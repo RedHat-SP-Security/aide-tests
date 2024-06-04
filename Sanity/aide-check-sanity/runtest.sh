@@ -60,11 +60,20 @@ rlJournalStart && {
 
   rlPhaseStartTest "aide check" && {
     rlRun -s "aide --check -c /root/aide/aide.conf" 0-255
-    
-    rlAssertGrep "file=/root/aide/data/file1; removed" $rlRun_LOG
-    rlAssertGrep "file=/root/aide/data/file2;SHA256_old=O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD68ELkoXpCHc=;SHA256_new=wM3nf6j++X1HbBCq09LVT8wvM2FA0HNlHC3Mzx43n9Y=" $rlRun_LOG
-    rlAssertGrep "file=/root/aide/data/file3;Perm_old=-rw-rw-rw-;Perm_new=-rwxrwxrwx" $rlRun_LOG
-    rlAssertGrep "file=/root/aide/data/file4; added" $rlRun_LOG
+    if rlIsRHELLike "=<9"; then
+      rlAssertGrep "file=/root/aide/data/file1; removed" $rlRun_LOG
+      rlAssertGrep "file=/root/aide/data/file2;SHA256_old=O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD68ELkoXpCHc=;SHA256_new=wM3nf6j++X1HbBCq09LVT8wvM2FA0HNlHC3Mzx43n9Y=" $rlRun_LOG
+      rlAssertGrep "file=/root/aide/data/file3;Perm_old=-rw-rw-rw-;Perm_new=-rwxrwxrwx" $rlRun_LOG
+      rlAssertGrep "file=/root/aide/data/file4; added" $rlRun_LOG
+    else
+      rlAssertGrep "f----------------: /root/aide/data/file1" $rlRun_LOG
+      rlAssertGrep "File: /root/aide/data/file2\n
+ SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
+             68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
+      rlAssertGrep "File: /root/aide/data/file3\n
+ Perm      : -rw-rw-rw-                       | -rwxrwxrwx" $rlRun_LOG
+      rlAssertGrep "f++++++++++++++++: /root/aide/data/file4" $rlRun_LOG
+    fi
     rm -f $rlRun_LOG
   rlPhaseEnd; }
 

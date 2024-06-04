@@ -41,8 +41,8 @@ AIDE_SECOND_CONF=aide_second.conf
 rlJournalStart
     rlPhaseStartSetup
         if rlIsRHELLike "=<9"; then
-            AIDE_FIRST_CONF=aide_rhel_9.conf
-            AIDE_SECOND_CONF=aide_rhel_9.conf
+            AIDE_FIRST_CONF=aide_rhel_9_first.conf
+            AIDE_SECOND_CONF=aide_rhel_9_second.conf
         fi
         rlAssertRpm $PACKAGE
         rlFileBackup $AIDE_CONFIG
@@ -64,9 +64,11 @@ rlJournalStart
     rlPhaseStartTest
         # Generate some logs and check them
         rlRun "aide --check" 0-255
-        rlRun "sleep 2"
-        rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"
-
+        if rlIsRHELLike "=<9"; then
+          rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"
+        else
+          rlRun "cat $AIDE_LOG | grep 'old database entry .* has no matching rule, run --init or --update'"
+        fi
         #The test cannot be executed too closely to the end of a minute, otherwise
         #+cron manage to rotate the aide logs twice and the test will fail
         #+so let's try to plan the execution (cron start at the start of minute)
@@ -100,11 +102,19 @@ EOF"
         rlRun "sleep 2"
         rlRun -s "cat $AIDE_LOG"
          # check that new message has been logged
-        rlAssertGrep 'Old db contains a \(file\|entry\) that shouldn.t be there' $rlRun_LOG -qi
+        if rlIsRHELLike "=<9"; then
+          rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"     
+        else
+          rlRun "cat $AIDE_LOG | grep 'old database entry .* has no matching rule, run --init or --update'"
+        fi
         rm -f $rlRun_LOG
         # check that old message is in the rotated log
         rlRun -s "cat ${AIDE_LOG}.1 "
-        rlAssertGrep 'Old db contains a \(file\|entry\) that shouldn.t be there' $rlRun_LOG -qi
+        if rlIsRHELLike "=<9"; then
+          rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"     
+        else
+          rlRun "cat $AIDE_LOG | grep 'old database entry .* has no matching rule, run --init or --update'"
+        fi
         rm -f $rlRun_LOG
 
         rlRun "matchpathcon -V $AIDE_LOG" 0 "Verify that $AIDE_LOG has correct SELinux context"

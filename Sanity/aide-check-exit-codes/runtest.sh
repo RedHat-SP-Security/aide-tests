@@ -33,7 +33,7 @@ PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 
 DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
+DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
 DB="${DBDIR}/${DB}"
 
 DBnew=$(grep "^database_out=" "$AIDE_CONF" | cut -d/ -f2-)
@@ -59,16 +59,18 @@ rlJournalStart
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
-
+        if rlIsRHELLike "=<9"; then
+          DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
+        fi
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
         rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
 
-        if ! grep -q -e 'CONTENT_EX' ${AIDE_CONF}; then
-            rlRun "echo \"CONTENT_EX = sha256+ftype+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
+        if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
+            rlRun "echo \"CONTENTEX = sha256+ftype+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
         fi
 
-        rlAssertGrep 'CONTENT_EX' ${AIDE_CONF}
-        rlRun "echo '/root/ CONTENT_EX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
+        rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
+        rlRun "echo '/root/ CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
         rlRun "aide --config-check" 0 "No harm on changing config"
     rlPhaseEnd
 
