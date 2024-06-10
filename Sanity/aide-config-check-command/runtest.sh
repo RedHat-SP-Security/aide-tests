@@ -58,7 +58,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Passing non-existing filepath"
-        rlRun -s "aide -D -c /nosuchfile" 18
+        rlRun -s "aide -D -c /nosuchfile" 17,18
         rlRun "cat $rlRun_LOG"
 	if rlIsRHELLike "=<9"; then
           rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E
