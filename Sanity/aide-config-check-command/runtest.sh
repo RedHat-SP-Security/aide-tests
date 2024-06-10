@@ -48,17 +48,25 @@ rlJournalStart
     rlPhaseStartTest "Checking the faulty configuration file"
         rlRun -s "aide -D -c $TmpDir/aide.conf" 17
         rlRun "cat $rlRun_LOG"
-        rlAssertGrep "2:syntax error" $rlRun_LOG
-        rlAssertGrep "2:Error while reading configuration:" $rlRun_LOG
-        rlAssertGrep "Configuration error" $rlRun_LOG
+        if rlIsRHELLike "=<9"; then
+          rlAssertGrep "2:syntax error" $rlRun_LOG
+          rlAssertGrep "2:Error while reading configuration:" $rlRun_LOG
+          rlAssertGrep "Configuration error" $rlRun_LOG
+        else
+          rlAssertGrep "ERROR: .* unknown config option: 'foo' (line: 'foo')" $rlRun_LOG
+        fi
     rlPhaseEnd
 
     rlPhaseStartTest "Passing non-existing filepath"
         rlRun -s "aide -D -c /nosuchfile" 18
         rlRun "cat $rlRun_LOG"
-        rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E
-        rlAssertGrep "No config defined" $rlRun_LOG
-        rlAssertGrep "Configuration error" $rlRun_LOG
+	if rlIsRHELLike "=<9"; then
+          rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E
+          rlAssertGrep "No config defined" $rlRun_LOG
+          rlAssertGrep "Configuration error" $rlRun_LOG
+	else
+          rlAssertGrep "ERROR: cannot open config file '/nosuchfile': No such file or directory" $rlRun_LOG
+	fi
     rlPhaseEnd
 
     rlPhaseStartCleanup
