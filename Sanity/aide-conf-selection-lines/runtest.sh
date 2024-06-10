@@ -33,7 +33,11 @@ PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 
 DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
+if rlIsRHELLike "=<9"; then
+  DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
+else
+  DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
+fi
 DB="${DBDIR}/${DB}"
 
 DBnew=$(grep "^database_out=" "$AIDE_CONF" | cut -d/ -f2-)
@@ -53,9 +57,6 @@ rlJournalStart
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d --tmpdir=/)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
-        if rlIsRHELLike "=<9"; then
-          DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
-        fi
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
         rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
         rlRun "sed -i '/^$/d' ${AIDE_CONF}" 0 "Delete empty lines"
