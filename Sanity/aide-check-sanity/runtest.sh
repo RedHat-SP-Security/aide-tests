@@ -36,9 +36,12 @@ AIDE_CONF=aide.conf
 rlJournalStart && {
   rlPhaseStartSetup && {
     rlAssertRpm $PACKAGE
+    if rlIsRHELLike ">=10" && [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
+        rlRun "mv $AIDE_CONF /root/aide/aide.conf"
+    fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
-      rlRun "rlFileBackup --clean /root/aide/"
-      rlRun "mkdir -p /root/aide/{,data,db,log}"
+        rlRun "rlFileBackup --clean /root/aide/"
+        rlRun "mkdir -p /root/aide/{,data,db,log}"
         if rlIsRHELLike "=<9"; then
             AIDE_CONF=aide_rhel_9.conf
 
