@@ -112,7 +112,7 @@ if ! ${SYSLOG_FORMAT}; then
 
 	[ -z "$PATTERNS" ] && break
 
-	rlPhaseStartTest "$TEST_DESC"
+	rlPhaseStartTest "Test description: $TEST_DESC"
 	    rlRun "grep 'File: $TmpDir/$FILE' $AIDE_LOG" 0 "Searching for $TmpDir/$FILE changed files"
 	    NUM_PATTERNS=`echo $PATTERNS | wc -w`
 	    for PATTERN in $PATTERNS; do
@@ -133,7 +133,7 @@ else  # test the (compact) aide syslog_format output format
 	FILE=`echo $LINE | cut -d ';' -f 2`
 	PATTERN=`echo $LINE | cut -d ';' -f 3 | cut -d ' ' -f 1`
 	[ -z "$PATTERN" ] && break
-	rlPhaseStartTest "$TEST_DESC"
+	rlPhaseStartTest "Test description: $TEST_DESC"
 	    rlRun "egrep 'file=$TmpDir/$FILE;${PATTERN}_old=.*${PATTERN}_new=' $AIDE_LOG" 0 "Searching for $TmpDir/$FILE changed with pattern $PATTERN"
         rlPhaseEnd
     done < $PATTERN_FILE
