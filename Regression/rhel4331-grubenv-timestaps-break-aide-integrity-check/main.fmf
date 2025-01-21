@@ -1,0 +1,22 @@
+summary: Check /boot/grub2/grubenv's timestamp modification doesn't break aide integrity check
+description: ''
+contact: Patrik Koncity <pkoncity@redhat.com>
+component:
+- aide
+test: ./runtest.sh
+require:
+- aide
+- grub2-tools
+duration: 5m
+enabled: true
+tag:
+- NoRHEL6
+- NoRHEL7
+- NoRHEL8
+link:
+  - verifies: https://issues.redhat.com/browse/RHEL-4331
+adjust:
+-   enabled: false
+    when: distro < rhel-9.6
+    continue: false
+
