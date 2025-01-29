@@ -31,19 +31,23 @@
 
 PACKAGE="aide"
 TESTDIR=`pwd`
+AIDE_CONFIG=aide.conf
 
 rlJournalStart
     rlPhaseStartSetup
+        if rlIsRHELLike "=<9"; then
+            AIDE_CONFIG=aide_rhel_9.conf
+        fi
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
 
-        rlRun "sed 's%AIDE_DIR%$TmpDir%g' $TESTDIR/aide.conf > $TmpDir/aide.conf" 0 "Prepare aide.conf file"
+        rlRun "sed 's%AIDE_DIR%$TmpDir%g' $TESTDIR/$AIDE_CONFIG > $TmpDir/$AIDE_CONFIG" 0 "Prepare aide.conf file"
         rlRun "mkdir -p data/permSizeCheck log db"
         rlRun "echo blah > data/testFile" 0 "Make test file"
         rlRun "echo blah > data/permSizeCheck/testFile" 0 "Make test file"
 
-        rlRun "aide -i -c $TmpDir/aide.conf" 0 "Init database again"
+        rlRun "aide -i -c $TmpDir/$AIDE_CONFIG" 0 "Init database again"
         rlRun "cp -p db/aide.db.out.gz db/aide.db.gz" 0 "Copy database to the read database"
     rlPhaseEnd
 
@@ -54,7 +58,7 @@ rlJournalStart
         rlRun "echo blah blah >> data/permSizeCheck/testFile" 0 "Change test file"
         rlRun "chmod 777 data/permSizeCheck/testFile" 0 "Change permission"
 
-        rlRun -s "aide -c $TmpDir/aide.conf" 4 "File changed check"
+        rlRun -s "aide -c $TmpDir/$AIDE_CONFIG" 4 "File changed check"
         rlAssertGrep "^  Added .*:[[:space:]]*0" $rlRun_LOG -E
         rlAssertGrep "^  Changed .*:[[:space:]]*2" $rlRun_LOG -E
         rlAssertGrep ":[[:space:]]*${TmpDir}/data/testFile" $rlRun_LOG -E
