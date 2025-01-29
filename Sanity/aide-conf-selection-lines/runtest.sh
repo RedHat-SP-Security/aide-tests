@@ -55,8 +55,10 @@ aideInit() {
 rlJournalStart
     rlPhaseStartSetup
         rlAssertRpm $PACKAGE
-        rlRun "TmpDir=\$(mktemp -d --tmpdir=/)" 0 "Creating tmp directory"
-        rlRun "pushd $TmpDir"
+        AIDE_TEST_DIR="/var/aide-testing-dir"
+        rlRun "mkdir -p $AIDE_TEST_DIR/"
+        #rlRun "TmpDir=\$(mktemp -d --tmpdir=$AIDE_TEST_DIR/)" 0 "Creating tmp directory"
+        rlRun "pushd $AIDE_TEST_DIR"
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
         rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
         rlRun "sed -i '/^$/d' ${AIDE_CONF}" 0 "Delete empty lines"
@@ -70,10 +72,10 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking selector '/' functionlity"
-        [ "$(pwd)" == "${TmpDir}" ] || rlFail
+        [ "$(pwd)" == "${AIDE_TEST_DIR}" ] || rlFail
         rlRun "mkdir myRoot"
 
-        rlRun "echo \"${TmpDir}/myRoot/ CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding regular selection line"
+        rlRun "echo \"${AIDE_TEST_DIR}/myRoot/ CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding regular selection line"
         rlRun "tail -1 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding regular selection line"
         aideInit
@@ -86,7 +88,7 @@ rlJournalStart
 
     rlPhaseStartTest "Checking selector '!' functionlity"
         rlRun "mkdir myRoot/dirNotCheck"
-        rlRun "echo \"!${TmpDir}/myRoot/dirNotCheck/\" >> ${AIDE_CONF}" 0 "Adding negative selection line"
+        rlRun "echo \"!${AIDE_TEST_DIR}/myRoot/dirNotCheck/\" >> ${AIDE_CONF}" 0 "Adding negative selection line"
         rlRun "tail -2 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding negative selection line"
 
@@ -99,7 +101,7 @@ rlJournalStart
 
     rlPhaseStartTest "Checking selector '=' functionlity"
         rlRun "mkdir dirCheckJustThis"
-        rlRun "echo \"=${TmpDir}/dirCheckJustThis CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding equals selection line"
+        rlRun "echo \"=${AIDE_TEST_DIR}/dirCheckJustThis CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding equals selection line"
         rlRun "tail -3 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding equals selection line"
 
@@ -121,7 +123,7 @@ rlJournalStart
         rlRun "rm ${DB}" 0 "Removing AIDE datbase after finish all tests"
         rlRun "rlFileRestore --namespace mainBackup" 0 "Restore aide config"
         rlRun "popd"
-        rlRun "rm -r $TmpDir" 0 "Removing tmp directory"
+        rlRun "rm -r $AIDE_TEST_DIR" 0 "Removing aide tmp directory"
     rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd

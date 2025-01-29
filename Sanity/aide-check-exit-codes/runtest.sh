@@ -69,9 +69,10 @@ rlJournalStart
         if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
             rlRun "echo \"CONTENTEX = sha256+ftype+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
         fi
-
+        AIDE_TEST_DIR="/var/aide-testing-dir"
+        rlRun "mkdir -p $AIDE_TEST_DIR"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
-        rlRun "echo '/root/ CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
+        rlRun "echo '$AIDE_TEST_DIR/ CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
         rlRun "aide --config-check" 0 "No harm on changing config"
     rlPhaseEnd
 
@@ -79,7 +80,7 @@ rlJournalStart
         aideInit
         aideCheck
 
-        rlRun "testingFile=\$(mktemp --tmpdir=/root)" 0 "Add new temporary file - cannot be in /tmp"
+        rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
         rlRun -s "aide" 1 "Recheck consistency between database and filesystem"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlAssertGrep ":\t*1" $rlRun_LOG -P
@@ -90,7 +91,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 2 (removed files detected)"
-        rlRun "testingFile=\$(mktemp --tmpdir=/root)" 0 "Add new temporary file - cannot be in /tmp"
+        rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
         aideInit
         aideCheck
 
@@ -102,7 +103,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 4 (changed files detected)"
-        rlRun "testingFile=\$(mktemp --tmpdir=/root)" 0 "Add new temporary file - cannot be in /tmp"
+        rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
         aideInit
         aideCheck
 
@@ -137,6 +138,7 @@ rlJournalStart
         rlRun "rlFileRestore" 0 "Restore aide config"
         rlRun "popd"
         rlRun "rm -r $TmpDir" 0 "Removing tmp directory"
+        rm -rf $AIDE_TEST_DIR
     rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd

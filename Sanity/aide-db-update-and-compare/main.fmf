@@ -13,6 +13,7 @@ tag:
 - TIPpass_Security
 - Tier1
 - Tier1security
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/aide/Sanity/aide-db-update-and-compare
 extra-task: /CoreOS/aide/Sanity/aide-db-update-and-compare
