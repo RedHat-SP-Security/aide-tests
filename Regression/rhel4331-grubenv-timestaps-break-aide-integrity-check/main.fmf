@@ -7,7 +7,7 @@ test: ./runtest.sh
 require:
 - aide
 - grub2-tools
-duration: 5m
+duration: 15m
 enabled: true
 tag:
 - NoRHEL6
@@ -18,4 +18,8 @@ link:
 adjust:
 -   enabled: false
     when: distro < rhel-9.6 or distro == fedora
+    continue: false
+-   enabled: false
+    when: arch == s390x
+    because: grub2 pkg is not builded for s390x
     continue: false
