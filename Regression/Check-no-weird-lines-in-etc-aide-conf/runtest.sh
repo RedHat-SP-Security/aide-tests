@@ -92,7 +92,7 @@ rlJournalStart
         [[ $(rlGetArch) =~ "s390" ]] && rlRun "sed -i '\|/etc/grub.d|d' aide_config_paths_2" 0 \
             "Removing /etc/grub.d aide configured path: not present on s390x"
         [[ $(rlGetArch) =~ "s390" ]] && rlRun "sed -i '\|/boot/grub2/grubenv|d' aide_config_paths_2" 0 \
-            "Removing /etc/grub.d aide configured path: not present on s390x"
+            "Removing /boot/grub2/grubenv aide configured path: not present on s390x"
 
         rlRun "mv aide_config_paths_2 aide_config_paths"
         rlRun "wc -l aide_config_paths" 0 "Count of paths in aide config"
