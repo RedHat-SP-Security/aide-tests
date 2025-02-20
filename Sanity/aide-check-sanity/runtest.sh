@@ -37,17 +37,21 @@ rlJournalStart && {
   rlPhaseStartSetup && {
     rlAssertRpm $PACKAGE
     AIDE_TEST_DIR="/var/aide-testing-dir"
-    if rlIsRHELLike ">=10" && [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
-        rlRun "mkdir -p $AIDE_TEST_DIR"
-        rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+    if rlIsRHELLike "=<9"; then
+      AIDE_CONF=aide_rhel_9.conf
+    fi
+    if [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
+        rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
+        if rlIsRHELLike ">=10"; then
+          rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+        fi
+        if rlIsRHELLike "=<9"; then
+            rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+        fi
     fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
-        rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
-        rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
-        if rlIsRHELLike "=<9"; then
-            AIDE_CONF=aide_rhel_9.conf
-
-        fi
+      rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
+      rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
       rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
       rlRun "touch $AIDE_TEST_DIR/data/empty_file"
       rlRun "echo 'x' > $AIDE_TEST_DIR/data/file1"
