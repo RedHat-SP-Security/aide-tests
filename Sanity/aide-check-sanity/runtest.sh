@@ -42,7 +42,7 @@ rlJournalStart && {
         rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
     fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
-        rlRun "rlFileBackup --clean /root/aide/"
+        rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
         rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
         if rlIsRHELLike "=<9"; then
             AIDE_CONF=aide_rhel_9.conf
