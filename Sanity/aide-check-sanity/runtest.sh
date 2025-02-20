@@ -41,7 +41,6 @@ rlJournalStart && {
       AIDE_CONF=aide_rhel_9.conf
     fi
     if [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
-        rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
         if rlIsRHELLike ">=10"; then
           rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
         fi
@@ -84,11 +83,11 @@ rlJournalStart && {
       rlAssertGrep "f++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
     fi
     rm -f $rlRun_LOG
-    rm -rf $AIDE_TEST_DIR
   rlPhaseEnd; }
 
   [[ -z "$IN_PLACE_UPGRADE" ]] && rlPhaseStartCleanup && {
     rlRun "rlFileRestore"
+    rlRun "rm -rf $AIDE_TEST_DIR"
   rlPhaseEnd; }
   
   rlJournalPrintText
