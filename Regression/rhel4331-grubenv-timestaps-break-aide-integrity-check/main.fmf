@@ -17,7 +17,7 @@ link:
   - verifies: https://issues.redhat.com/browse/RHEL-4331
 adjust:
 -   enabled: false
-    when: distro < rhel-9.6 or distro == fedora
+    when: distro < rhel-9.5 or distro == fedora
     continue: false
 -   enabled: false
     when: arch == s390x
