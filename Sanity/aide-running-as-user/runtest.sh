@@ -40,6 +40,12 @@ rlJournalStart
 	    rlRun "echo -e '@@define DBDIR /var/lib/aide\nfoo' > aide.conf"
     rlPhaseEnd
 
+    rlPhaseStartTest "Checking axioms"
+        rlRun "touch file.txt" 0 "Creating simple file"
+        rlRun "echo 'Random text' > file.txt" 0  "Filling the file with text"
+        rlAssertGrep "Random text" "./file.txt"
+    rlPhaseEnd
+
     rlPhaseStartCleanup
         rlRun "popd"
         rlRun "rm -r $TmpDir" 0 "Removing tmp directory"
