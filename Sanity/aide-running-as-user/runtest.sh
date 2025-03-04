@@ -41,7 +41,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking axioms"
-        rlRun "touch file.txt" 0 "Creating simple file"
+        rlRun "touch file.txt" 0 "Creating simple file" 
         rlRun "echo 'Random text' > file.txt" 0  "Filling the file with text"
        rlAssertGrep "Random text" "$TmpDir/file.txt"
     rlPhaseEnd

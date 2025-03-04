@@ -6,16 +6,6 @@ recommend:
 - aide
 duration: 5m
 enabled: true
-tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- SP-TBU
-- TIPpass_Security
-- Tier1
-- Tier1security
-- ImageMode
-tier: '1'
 extra-summary: /CoreOS/aide/Sanity/aide-config-check-command
 extra-task: /CoreOS/aide/Sanity/aide-config-check-command
 extra-nitrate: TC#0548409
