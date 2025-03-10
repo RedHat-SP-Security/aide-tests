@@ -6,8 +6,8 @@ recommend:
 - aide
 duration: 5m
 enabled: true
-extra-summary: /CoreOS/aide/Sanity/aide-config-check-command
-extra-task: /CoreOS/aide/Sanity/aide-config-check-command
+extra-summary: /CoreOS/aide/Sanity/aide-running-as-user
+extra-task: /CoreOS/aide/Sanity/aide-running-as-user
 extra-nitrate: TC#0548409
 adjust:
 -   enabled: false
