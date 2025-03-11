@@ -48,17 +48,28 @@ rlJournalStart
         rlRun "echo 'b' > $TEST_DIR/data/b.txt"
         rlRun "chmod a=rw $TEST_DIR/data/*"
         rlRun "aide -i -c $TEST_DIR/aide.conf"
+
+        # rlRun "pushd $TEST_DIR"
+        echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
+        exe1="${testUserHomeDir}/exe1"
+        exe2="${testUserHomeDir}/exe2"
+        rlRun "gcc $TEST_DIR/main.c -o $exe1" 0 "Creating binary $exe1"
+        rlRun "gcc $TEST_DIR/main.c -g -o $exe2" 0 "Creating binary $exe2"
+        rlRun "chmod a+rx $exe1 $exe2 ${testUserHomeDir}"
         rlRun "testUserSetup"
     rlPhaseEnd
 
 
     rlPhaseStartTest "Checking axioms"
+        rlRun "su -c '$exe1' - $testUser" 0 "cache trusted binary $exe1"
+        rlRun "su -c '$exe2' - $testUser" 0 "check untrusted binary $exe2"
         rlRun "touch file.txt" 0 "Creating simple file" 
         rlRun "echo 'Random text' > file.txt" 0  "Filling the file with text"
         rlAssertGrep "Random text" "file.txt"
     rlPhaseEnd
 
     rlPhaseStartCleanup
+        # rlRun "popd"
         rlRun "testUserCleanup"
         rlRun "rm -r $TEST_DIR" 0 "Removing tmp directory"
     rlPhaseEnd
