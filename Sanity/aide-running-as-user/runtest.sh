@@ -31,24 +31,36 @@
 . /usr/share/beakerlib/beakerlib.sh || exit 1
 
 PACKAGE="aide"
+TEST_DIR="/var/aide-testing-dir"
+AIDE_CONFIG=aide.conf
 
 rlJournalStart
     rlPhaseStartSetup
-        rlAssertRpm $PACKAGE
-        rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
-        rlRun "pushd $TmpDir"
-	    rlRun "echo -e '@@define DBDIR /var/lib/aide\nfoo' > aide.conf"
+        if rlIsRHELLike "=<9"; then
+            AIDE_CONFIG=aide_rhel_9.conf
+        fi
+        rlRun "rlImport --all" || rlDie 'cannot continue'
+        rlAssertRpm $PACKAGE || rlDie 'cannot continue'
+        rlRun "mkdir -p $TEST_DIR/{,data,db,log}"
+        rlRun "mv $AIDE_CONFIG $TEST_DIR/aide.conf"
+        rlRun "touch $TEST_DIR/data/empty.txt"
+        rlRun "echo 'a' > $TEST_DIR/data/a.txt"
+        rlRun "echo 'b' > $TEST_DIR/data/b.txt"
+        rlRun "chmod a=rw $TEST_DIR/data/*"
+        rlRun "aide -i -c $TEST_DIR/aide.conf"
+        rlRun "testUserSetup"
     rlPhaseEnd
+
 
     rlPhaseStartTest "Checking axioms"
         rlRun "touch file.txt" 0 "Creating simple file" 
         rlRun "echo 'Random text' > file.txt" 0  "Filling the file with text"
-       rlAssertGrep "Random text" "$TmpDir/file.txt"
+        rlAssertGrep "Random text" "file.txt"
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun "popd"
-        rlRun "rm -r $TmpDir" 0 "Removing tmp directory"
+        rlRun "testUserCleanup"
+        rlRun "rm -r $TEST_DIR" 0 "Removing tmp directory"
     rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd
