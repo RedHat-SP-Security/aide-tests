@@ -46,21 +46,30 @@ rlJournalStart
         rlRun "touch $TEST_DIR/data/empty.txt"
         rlRun "echo 'a' > $TEST_DIR/data/a.txt"
         rlRun "echo 'b' > $TEST_DIR/data/b.txt"
-        rlRun "chmod a=rw $TEST_DIR/data/*"
-        rlRun "aide -i -c $TEST_DIR/aide.conf"
+        rlRun "chmod a=rwx $TEST_DIR/*"
 
-        # rlRun "pushd $TEST_DIR"
         echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
+        # rlRun "chmod a+rw $TEST_DIR/main.c" 0
         exe1="${testUserHomeDir}/exe1"
         exe2="${testUserHomeDir}/exe2"
         rlRun "gcc $TEST_DIR/main.c -o $exe1" 0 "Creating binary $exe1"
         rlRun "gcc $TEST_DIR/main.c -g -o $exe2" 0 "Creating binary $exe2"
         rlRun "chmod a+rx $exe1 $exe2 ${testUserHomeDir}"
         rlRun "testUserSetup"
+
+        rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
+
     rlPhaseEnd
 
 
-    rlPhaseStartTest "Checking axioms"
+    rlPhaseStartTest "Testing running as a user"
+        # rlRun "su -c 'gcc $TEST_DIR/main.c -o $exe1' - $testUser" 0 "Creating binary $exe1 as $testUser"
+        # rlRun "su -c 'gcc $TEST_DIR/main.c -g -o $exe2' - $testUser" 0 "Creating binary $exe2 as $testUser"
+
+
+
+
+
         rlRun "su -c '$exe1' - $testUser" 0 "cache trusted binary $exe1"
         rlRun "su -c '$exe2' - $testUser" 0 "check untrusted binary $exe2"
         rlRun "touch file.txt" 0 "Creating simple file" 
@@ -69,7 +78,6 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        # rlRun "popd"
         rlRun "testUserCleanup"
         rlRun "rm -r $TEST_DIR" 0 "Removing tmp directory"
     rlPhaseEnd
