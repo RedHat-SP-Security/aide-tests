@@ -67,9 +67,14 @@ rlJournalStart
         rlRun "mv $TEST_DIR/data/random.txt $TEST_DIR/"
         rlRun "mv $TEST_DIR/random.txt $TEST_DIR/data/random.txt"
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 0 "Checking changes as $testUser"
+        rlRun "su -c 'cd $TEST_DIR/data && nohup sleep 300 &' - $testUser" 0 "Starting background daemon as $testUser in $TEST_DIR/data"
+        sleep_pid=$(pgrep -u $testUser sleep)
+        rlAssertExists "/proc/$sleep_pid" "Daemon process exists"
+        rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 1 "Checking deamon as $testUser"
     rlPhaseEnd
 
     rlPhaseStartCleanup
+    rlRun "su -c 'kill $sleep_pid' - $testUser" 0 
         rlRun "rm -r $testUserHomeDir" 0 "Removing testing directory"
         rlRun "testUserCleanup"
         rlRun "rm -r $TEST_DIR" 0 "Removing testing directory"
