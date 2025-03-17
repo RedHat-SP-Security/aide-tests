@@ -6,6 +6,7 @@ require+:
   - library(distribution/testUser)
 recommend:
 - aide
+- gcc
 duration: 5m
 enabled: true
 extra-summary: /CoreOS/aide/Sanity/aide-running-as-user

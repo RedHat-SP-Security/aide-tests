@@ -45,12 +45,9 @@ rlJournalStart
         rlRun "mv $AIDE_CONFIG $TEST_DIR/aide.conf"
         rlRun "chmod a=rwx $TEST_DIR/*"
         rlRun "chmod a=rwx $testUserHomeDir/*"
-
         rlRun "testUserSetup"
+        rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
         echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
-        # rlRun "chmod a+rw $TEST_DIR/main.c" 0
-        # exe1="${testUserHomeDir}/exe1"
-        # exe2="${testUserHomeDir}/exe2"
         exe1="${TEST_DIR}/data/exe1"
         exe2="${TEST_DIR}/data/exe2"
         rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
@@ -61,16 +58,14 @@ rlJournalStart
 
     rlPhaseEnd
 
-
     rlPhaseStartTest "Testing running as a user"
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 1 "Checking changes as $testUser"
         rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" 1 "Updating AIDE database as $testUser"
         rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz"
-
-
         rlRun "su -c '$exe1' - $testUser" 0 "cache trusted binary $exe1"
         rlRun "su -c '$exe2' - $testUser" 0 "check untrusted binary $exe2"
-
+        rlRun "mv $TEST_DIR/data/random.txt $TEST_DIR/"
+        rlRun "mv $TEST_DIR/random.txt $TEST_DIR/data/random.txt"
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 0 "Checking changes as $testUser"
     rlPhaseEnd
 
