@@ -53,27 +53,40 @@ rlJournalStart
         exe2="${TEST_DIR}/data/exe2"
         rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
         rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
-        rlRun "gcc $TEST_DIR/main.c -o $exe1" 0 "Creating binary $exe1"
-        rlRun "gcc $TEST_DIR/main.c -g -o $exe2" 0 "Creating binary $exe2"
-        
     rlPhaseEnd
 
-    rlPhaseStartTest "Testing running as a user"
+    rlPhaseStartTest "Testing running as a user (new files)"
+        rlRun "gcc $TEST_DIR/main.c -o $exe1" 0 "Creating binary $exe1"
+        rlRun "gcc $TEST_DIR/main.c -g -o $exe2" 0 "Creating binary $exe2"
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 1 "Checking changes as $testUser"
         rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" 1 "Updating AIDE database as $testUser"
         rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
+    rlPhaseEnd
 
+    rlPhaseStartTest "Testing running as a user (adding permissions)"
         rlRun "chmod a=rwx $exe1 $exe2 ${testUserHomeDir}" 0 "Adding permissions for binaries and home directory"
-
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 4 "Checking changes as $testUser after changing permissions"
         rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" 4 "Updating AIDE database as $testUser after changing permissions"
         rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
-        
-        rlRun "su -c '$exe1' - $testUser" 0 "cache trusted binary $exe1"
-        rlRun "su -c '$exe2' - $testUser" 0 "check untrusted binary $exe2"
+    rlPhaseEnd
+
+    rlPhaseStartTest "Making changes and restoring them"
         rlRun "mv $TEST_DIR/data/random.txt $TEST_DIR/"
         rlRun "mv $TEST_DIR/random.txt $TEST_DIR/data/random.txt"
+        rlRun "chmod a=rwx $TEST_DIR/data/random.txt" 0 "Adding permissions for random.txt"
+        rlRun "echo 'Different text' > $TEST_DIR/data/random.txt"
+        rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
+        rlRun "chmod a=r $TEST_DIR/data/random.txt" 0 "Reverting permissions for random.txt"
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 0 "Checking changes as $testUser"
+    rlPhaseEnd
+
+    rlPhaseStartTest "Testing running as a user (running binaries)"
+        rlRun "su -c '$exe1' - $testUser" 0 "cache trusted binary $exe1"
+        rlRun "su -c '$exe2' - $testUser" 0 "check untrusted binary $exe2"
+        rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 0 "Checking changes as $testUser"
+    rlPhaseEnd
+
+    rlPhaseStartTest "Testing running as a user (running daemon)"
         rlRun "su -c 'cd $TEST_DIR/data && nohup sleep 300 &' - $testUser" 0 "Starting background daemon as $testUser in $TEST_DIR/data"
         sleep_pid=$(pgrep -u $testUser sleep)
         rlAssertExists "/proc/$sleep_pid" "Daemon process exists"
