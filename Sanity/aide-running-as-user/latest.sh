@@ -32,22 +32,24 @@
 
 PACKAGE="aide"
 TEST_DIR="/var/aide-testing-dir"
-AIDE_CONFIG=aide.conf
+# AIDE_CONFIG=aide.conf
 
 function checkUpdateAide {
-    rlRun -s "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" $1 "Updating AIDE database as $testUser"
+    rlRun -s "su -c 'aide --update - $testUser" $1 "Updating AIDE database as $testUser"
     rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
 }
 
 rlJournalStart
     rlPhaseStartSetup
-        if rlIsRHELLike "=<9"; then
-            AIDE_CONFIG=aide_rhel_9.conf
-        fi
+        # if rlIsRHELLike "=<9"; then
+        #     AIDE_CONFIG=aide_rhel_9.conf
+        # fi
+        # sedom pridat watch zlozku na skledovanie
+        # rlRun "sed
         rlRun "rlImport --all" || rlDie 'cannot continue'
         rlAssertRpm $PACKAGE || rlDie 'cannot continue'
         rlRun "mkdir -p $TEST_DIR/{,data,db,log}"
-        rlRun "mv $AIDE_CONFIG $TEST_DIR/aide.conf"
+        # rlRun "mv $AIDE_CONFIG $TEST_DIR/aide.conf"
         rlRun "chmod a=rwx $TEST_DIR/*"
         rlRun "chmod a=rwx $testUserHomeDir/*"
         rlRun "testUserSetup"
@@ -56,7 +58,8 @@ rlJournalStart
         echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
         exe1="${TEST_DIR}/data/exe1"
         exe2="${TEST_DIR}/data/exe2"
-        rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
+        rlRun "su -c 'aide -i - $testUser" 0 "Initializing AIDE database as $testUser"
+        
         rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
     rlPhaseEnd
 

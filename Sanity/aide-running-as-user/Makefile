@@ -1,1 +1,0 @@
-@echo "RhtsRequires:    library(distribution/testUser)" >> $(METADATA)
