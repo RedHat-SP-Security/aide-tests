@@ -35,8 +35,7 @@ TEST_DIR="/var/aide-testing-dir"
 AIDE_CONFIG=aide.conf
 
 function checkUpdateAide {
-    rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" $1 "Checking changes as $testUser"
-    rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" $1 "Updating AIDE database as $testUser"
+    rlRun -s "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" $1 "Updating AIDE database as $testUser"
     rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
 }
 
