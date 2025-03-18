@@ -47,21 +47,28 @@ rlJournalStart
         rlRun "chmod a=rwx $testUserHomeDir/*"
         rlRun "testUserSetup"
         rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
+        rlRun "chmod a=r $TEST_DIR/data/random.txt"
         echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
         exe1="${TEST_DIR}/data/exe1"
         exe2="${TEST_DIR}/data/exe2"
         rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
-        rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz"
+        rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
         rlRun "gcc $TEST_DIR/main.c -o $exe1" 0 "Creating binary $exe1"
         rlRun "gcc $TEST_DIR/main.c -g -o $exe2" 0 "Creating binary $exe2"
-        rlRun "chmod a=rx $exe1 $exe2 ${testUserHomeDir}"
-
+        
     rlPhaseEnd
 
     rlPhaseStartTest "Testing running as a user"
         rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 1 "Checking changes as $testUser"
         rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" 1 "Updating AIDE database as $testUser"
-        rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz"
+        rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
+
+        rlRun "chmod a=rwx $exe1 $exe2 ${testUserHomeDir}" 0 "Adding permissions for binaries and home directory"
+
+        rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 4 "Checking changes as $testUser after changing permissions"
+        rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" 4 "Updating AIDE database as $testUser after changing permissions"
+        rlRun "mv -f $TEST_DIR/db/aide.db.out.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
+        
         rlRun "su -c '$exe1' - $testUser" 0 "cache trusted binary $exe1"
         rlRun "su -c '$exe2' - $testUser" 0 "check untrusted binary $exe2"
         rlRun "mv $TEST_DIR/data/random.txt $TEST_DIR/"
@@ -74,7 +81,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartCleanup
-    rlRun "su -c 'kill $sleep_pid' - $testUser" 0 
+        rlRun "su -c 'kill $sleep_pid' - $testUser" 0 
         rlRun "rm -r $testUserHomeDir" 0 "Removing testing directory"
         rlRun "testUserCleanup"
         rlRun "rm -r $TEST_DIR" 0 "Removing testing directory"
