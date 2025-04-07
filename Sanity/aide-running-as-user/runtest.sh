@@ -48,13 +48,14 @@ rlJournalStart
         rlRun "chmod -R a=rwx $TEST_DIR/" 0 "Adding permissions for testing directory"
         rlRun "sed -i 's|@@define DBDIR .*|@@define DBDIR $TEST_DIR/db|' $TEST_DIR/aide.conf" 0
         rlRun "sed -i 's|@@define LOGDIR .*|@@define LOGDIR $TEST_DIR/log|' $TEST_DIR/aide.conf" 0
-        rlRun 'echo "/var/aide-testing-dir/data   p+u+g+sha256" >> $TEST_DIR/aide.conf' 0 "Adding watched directory"
         rlRun "testUserSetup"
         rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
         rlRun "chmod a=r $TEST_DIR/data/random.txt"
         echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
         exe1="${TEST_DIR}/data/exe1"
         exe2="${TEST_DIR}/data/exe2"
+        rlRun "sed -i '/# Next decide what directories\/files you want in the database/q'  $TEST_DIR/aide.conf"
+        rlRun 'echo "/var/aide-testing-dir/data   p+u+g+sha256" >> $TEST_DIR/aide.conf' 0 "Adding watched directory"
         rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
         rlRun "mv -f $TEST_DIR/db/aide.db.new.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
     rlPhaseEnd
