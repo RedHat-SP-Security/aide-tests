@@ -8,7 +8,7 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#   Copyright (c) 2017 Red Hat, Inc.
+#   Copyright (c) 2025 Red Hat, Inc.
 #
 #   This copyrighted material is made available to anyone wishing
 #   to use, modify, copy, or redistribute it subject to the terms
@@ -35,7 +35,7 @@ TEST_DIR="/var/aide-testing-dir"
 AIDE_CONFIG="/etc/aide.conf"
 
 function checkUpdateAide {
-    rlRun -s "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" $1 "Updating AIDE database as $testUser"
+    rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" $1 "Updating AIDE database as $testUser"
     rlRun "mv -f $TEST_DIR/db/aide.db.new.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
 }
 
@@ -76,7 +76,7 @@ rlJournalStart
         rlRun "mv $TEST_DIR/random.txt $TEST_DIR/data/random.txt"
         rlRun "chmod a=rwx $TEST_DIR/data/random.txt" 0 "Adding permissions for random.txt"
         rlRun "echo 'Different text' > $TEST_DIR/data/random.txt"
-        rlRun -s "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 4 "Checking changes"
+        rlRun "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 4 "Checking changes"
         rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
         rlRun "chmod a=r $TEST_DIR/data/random.txt" 0 "Reverting permissions for random.txt"
         checkUpdateAide 0

@@ -9,10 +9,3 @@ recommend:
 - gcc
 duration: 5m
 enabled: true
-extra-summary: /CoreOS/aide/Sanity/aide-running-as-user
-extra-task: /CoreOS/aide/Sanity/aide-running-as-user
-extra-nitrate: TC#0548409
-adjust:
--   enabled: false
-    when: distro == rhel-4, rhel-5
-    continue: false
