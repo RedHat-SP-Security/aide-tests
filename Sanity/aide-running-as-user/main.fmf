@@ -4,6 +4,9 @@ contact: Marek Šafařík <msafarik@redhat.com>
 test: ./runtest.sh
 require+:
   - library(distribution/testUser)
+tag:
+  - CI-Tier-1
+  - Tier1
 recommend:
 - aide
 - gcc
