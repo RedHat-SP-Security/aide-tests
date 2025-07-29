@@ -3,22 +3,23 @@ description: ''
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:
-- aide
+  - aide
 duration: 5m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- TIPpass_Security
-- Tier1
-- Tier1security
-- ImageMode
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - ImageMode
 tier: '1'
 extra-summary: /CoreOS/aide/Sanity/aide-db-update-and-compare
 extra-task: /CoreOS/aide/Sanity/aide-db-update-and-compare
 extra-nitrate: TC#0548407
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4, rhel-5
     continue: false
+id: 0c025a38-f004-4ccb-a9ad-aaffe85a2530

@@ -1,18 +1,18 @@
 environment:
     SYSLOG_FORMAT: 'true'
 tag:
-- CI-Tier-1
-- SP-TBU
-- TIPpass
-- TIPpass_Security
-- Tier1
-- Tier1security
-- TierCandidatesPASS
-- ImageMode
+  - CI-Tier-1
+  - SP-TBU
+  - TIPpass
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - TierCandidatesPASS
+  - ImageMode
 extra-summary: SYSLOG_FORMAT=true /CoreOS/aide/Sanity/aide-rules-test
 extra-nitrate: TC#0544948
 adjust+:
--   enabled: false
+  - enabled: false
     when: distro < rhel-6
     continue: false
-
+id: 43e09864-3b94-4a81-b438-4eb36b53b5d3

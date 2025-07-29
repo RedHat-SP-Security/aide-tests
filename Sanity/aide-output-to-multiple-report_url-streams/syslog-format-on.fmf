@@ -1,14 +1,15 @@
 environment:
     SYSLOG_FORMAT: 'true'
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- SP-TBU
-- TIPpass_Security
-- Tier1
-- Tier1security
-- TierCandidatesPASS
-- ImageMode
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - SP-TBU
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - TierCandidatesPASS
+  - ImageMode
 extra-summary: SYSLOG_FORMAT=true /CoreOS/aide/Sanity/aide-output-to-multiple-report_url-streams
 extra-nitrate: TC#0544983
+id: 03c7bcd2-533f-497f-9045-0595aeda3a24

@@ -16,3 +16,4 @@ adjust:
     when: distro < rhel-7
     continue: false
 extra-nitrate: TC#0612874
+id: 99b85a14-c65d-49c2-bb3a-6d4b868d7341

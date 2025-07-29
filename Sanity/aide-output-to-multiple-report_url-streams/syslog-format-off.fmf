@@ -1,11 +1,12 @@
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- TIPpass_Security
-- Tier1
-- Tier1security
-- TierCandidatesPASS
-- ImageMode
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - TierCandidatesPASS
+  - ImageMode
 extra-summary: /CoreOS/aide/Sanity/aide-output-to-multiple-report_url-streams
 extra-nitrate: TC#0544982
+id: bbc3078d-e13e-4888-bf97-4a7102bda4ee

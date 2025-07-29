@@ -1,9 +1,10 @@
 tag:
-- CI-Tier-1
-- TIPpass
-- TIPpass_Security
-- Tier1
-- Tier1security
-- ImageMode
+  - CI-Tier-1
+  - TIPpass
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - ImageMode
 extra-summary: /CoreOS/aide/Sanity/aide-rules-test
 extra-nitrate: TC#0059821
+id: 3a075ce9-8603-4cb1-8d71-63b42a0330ff

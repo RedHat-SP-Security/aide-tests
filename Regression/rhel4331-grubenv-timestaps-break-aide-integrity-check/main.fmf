@@ -1,25 +1,27 @@
-summary: Check /boot/grub2/grubenv's timestamp modification doesn't break aide integrity check
+summary: Check /boot/grub2/grubenv's timestamp modification doesn't break aide integrity
+    check
 description: ''
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
-- aide
+  - aide
 test: ./runtest.sh
 require:
-- aide
-- grub2-tools
+  - aide
+  - grub2-tools
 duration: 15m
 enabled: true
 tag:
-- NoRHEL6
-- NoRHEL7
-- NoRHEL8
+  - NoRHEL6
+  - NoRHEL7
+  - NoRHEL8
 link:
   - verifies: https://issues.redhat.com/browse/RHEL-4331
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-9.5 or distro == fedora
     continue: false
--   enabled: false
+  - enabled: false
     when: arch == s390x
     because: grub2 pkg is not builded for s390x
     continue: false
+id: 1ee141f7-0fd2-4e05-a748-408a0b01f184

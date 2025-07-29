@@ -8,7 +8,8 @@ tag:
   - CI-Tier-1
   - Tier1
 recommend:
-- aide
-- gcc
+  - aide
+  - gcc
 duration: 5m
 enabled: true
+id: a3dec7b7-7490-4d94-a175-ecdb3d9e6c3a
