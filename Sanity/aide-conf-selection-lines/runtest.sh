@@ -55,6 +55,11 @@ aideInit() {
 rlJournalStart
     rlPhaseStartSetup
         rlAssertRpm $PACKAGE
+        if [ -d "/var/log/aide" ]; then
+            rlLog "/var/log/aide dir  exists"
+        else
+            rlRun "mkdir -p /var/log/aide"
+        fi
         AIDE_TEST_DIR="/var/aide-testing-dir"
         rlRun "mkdir -p $AIDE_TEST_DIR/"
         #rlRun "TmpDir=\$(mktemp -d --tmpdir=$AIDE_TEST_DIR/)" 0 "Creating tmp directory"

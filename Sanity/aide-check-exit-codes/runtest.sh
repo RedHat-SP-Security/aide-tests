@@ -62,7 +62,15 @@ rlJournalStart
     rlPhaseStartSetup "Temp directory creation"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
+        if [ -d "/var/log/aide" ]; then
+            rlLog "/var/log/aide dir  exists"
+        else
+            rlRun "mkdir -p /var/log/aide"
+        fi
+        rlRun "rpm -ql aide"
+        rlRun "ls -al /var/log/aide/"
         rlRun "pushd $TmpDir"
+        rlRun "cat /etc/aide.conf"
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
         rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
 
@@ -73,11 +81,14 @@ rlJournalStart
         rlRun "mkdir -p $AIDE_TEST_DIR"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
         rlRun "echo '$AIDE_TEST_DIR/ CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
+        rlRun "cat /etc/aide.conf"
         rlRun "aide --config-check" 0 "No harm on changing config"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 1 (new files detected)"
         aideInit
+        rlRun "rpm -ql aide"
+        rlRun "ls -al /var/log/aide/"
         aideCheck
 
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
