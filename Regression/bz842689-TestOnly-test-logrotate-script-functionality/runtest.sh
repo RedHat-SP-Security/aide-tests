@@ -63,12 +63,8 @@ rlJournalStart
 
     rlPhaseStartTest
         # Generate some logs and check them
-        rlRun "aide --check" 0-255
-        if rlIsRHELLike "=<9"; then
-          rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"
-        else
-          rlRun "cat $AIDE_LOG | grep 'old database entry .* has no matching rule, run --init or --update'"
-        fi
+        rlRun "aide --check" 1-2 "New files reported or removed"
+        rlAssertGrep "AIDE found differences between database and filesystem!!" $AIDE_LOG
         #The test cannot be executed too closely to the end of a minute, otherwise
         #+cron manage to rotate the aide logs twice and the test will fail
         #+so let's try to plan the execution (cron start at the start of minute)
@@ -98,23 +94,15 @@ EOF"
         tail -50 /var/log/cron
 
         # Generate some logs and check them again
-        rlRun "aide --check" 0-255
+        rlRun "aide --check" 1-2 "New files reported or removed"
         rlRun "sleep 2"
         rlRun -s "cat $AIDE_LOG"
          # check that new message has been logged
-        if rlIsRHELLike "=<9"; then
-          rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"     
-        else
-          rlRun "cat $AIDE_LOG | grep 'old database entry .* has no matching rule, run --init or --update'"
-        fi
+        rlAssertGrep "AIDE found differences between database and filesystem!!" $AIDE_LOG
         rm -f $rlRun_LOG
         # check that old message is in the rotated log
         rlRun -s "cat ${AIDE_LOG}.1 "
-        if rlIsRHELLike "=<9"; then
-          rlRun "cat $AIDE_LOG | grep 'Old db contains a \(file\|entry\) that shouldn.t be there'"     
-        else
-          rlRun "cat $AIDE_LOG | grep 'old database entry .* has no matching rule, run --init or --update'"
-        fi
+        rlAssertGrep "AIDE found differences between database and filesystem!!" ${AIDE_LOG}.1
         rm -f $rlRun_LOG
 
         rlRun "matchpathcon -V $AIDE_LOG" 0 "Verify that $AIDE_LOG has correct SELinux context"
