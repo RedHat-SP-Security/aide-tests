@@ -15,7 +15,6 @@ discover:
      - /Sanity
      - /Regression
     exclude:
-     - /Regression/Check-no-weird-lines-in-etc-aide-conf
      - /Regression/bz842689-TestOnly-test-logrotate-script-functionality
 
 execute:

@@ -48,10 +48,12 @@ rlJournalStart
     rlPhaseStartTest "Checking the faulty configuration file"
         rlRun -s "aide -D -c $TmpDir/aide.conf" 17
         rlRun "cat $rlRun_LOG"
-        if rlIsRHELLike "=<9"; then
+        if rlIsRHELLike "=<9.7"; then
           rlAssertGrep "2:syntax error" $rlRun_LOG
           rlAssertGrep "2:Error while reading configuration:" $rlRun_LOG
           rlAssertGrep "Configuration error" $rlRun_LOG
+        elif rlIsFedora ">41"; then
+          rlAssertGrep "syntax error, unexpected new line, expecting '=' (line: 'foo')" $rlRun_LOG
         else
           rlAssertGrep "ERROR: .* unknown config option: 'foo' (line: 'foo')" $rlRun_LOG
         fi

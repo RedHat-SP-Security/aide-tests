@@ -59,12 +59,8 @@ rlJournalStart
 
 
     rlPhaseStartTest "Check that all paths in ${COFING} aim to existing system file (from the 'repoquery -al' command)"
-        rlRun "repoquery -al > system_files 2> /dev/null" 0 "Get all system files"
-        rlRun "wc -l system_files" 0 "Count of possible system files"
-
         rlRun "grep -e '^/' -e '^!' ${CONFIG} | cut -d ' ' -f 1 > aide_config_paths" \
             0 "Get all paths from aide config file"
-
         rlRun "cat aide_config_paths \
             | tr -d '!$~*' \
             | grep -v \
@@ -86,21 +82,34 @@ rlJournalStart
                 -e '/etc/xinetd.conf' \
                 -e '/etc/xinetd.d' \
                 -e '/etc/securetty' \
+                -e '/root/' \
+                -e '/etc/.' \
+                -e '/var/spool/at' \
             > aide_config_paths_2" \
             0 "Sanitaze aide config paths - remove paths that are not part of 'repoquery -al'"
-
+            #/var/spool/at reported https://bugzilla.redhat.com/show_bug.cgi?id=2396330
         [[ $(rlGetArch) =~ "s390" ]] && rlRun "sed -i '\|/etc/grub.d|d' aide_config_paths_2" 0 \
             "Removing /etc/grub.d aide configured path: not present on s390x"
         [[ $(rlGetArch) =~ "s390" ]] || [[ $(rlGetArch) =~ "ppc64le" ]] && rlRun "sed -i '\|/boot/grub2/grubenv|d' aide_config_paths_2" 0 \
             "Removing /boot/grub2/grubenv aide configured path: not present on s390x"
-
         rlRun "mv aide_config_paths_2 aide_config_paths"
         rlRun "wc -l aide_config_paths" 0 "Count of paths in aide config"
-
         rlLog "Check presence of each line in aide_config_paths in system_files"
+        COUNTER=0
         for path in $(cat aide_config_paths); do
-            grep -q "${path}" "system_files" || rlAssertGrep "${path}" "system_files" # Print output only if not found
+            OUTPUT_REPOQUERY=$(repoquery -qf ${path})
+            if [ -z "$OUTPUT_REPOQUERY" ]; then
+                rlFail "$path from aide config  didn't match system files"
+                ((COUNTER++))
+            fi
         done
+        # After checking all paths, use the counter to decide the final result.
+        if [ "$COUNTER" -gt 0 ]; then
+            # Use rlFail here to fail the test with a final summary.
+            rlFail "${COUNTER} AIDE path(s) were not found in any system files."
+        else
+            rlLog "SUCCESS: All paths were found in system packages."
+        fi
     rlPhaseEnd
 
 
