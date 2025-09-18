@@ -33,7 +33,7 @@ PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 
 DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-if rlIsRHELLike "=<9"; then
+if rlIsRHELLike "=<9.7"; then
   DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
 else
   DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)

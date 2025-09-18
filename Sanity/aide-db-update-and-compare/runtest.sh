@@ -37,7 +37,7 @@ AIDE_CONFIG=aide.conf
 
 rlJournalStart
     rlPhaseStartSetup
-        if rlIsRHELLike "=<9"; then
+        if rlIsRHELLike "=<9.7"; then
             AIDE_CONFIG=aide_rhel_9.conf
         fi
         rlAssertRpm $PACKAGE

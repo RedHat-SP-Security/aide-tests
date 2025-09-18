@@ -40,7 +40,7 @@ AIDE_SECOND_CONF=aide_second.conf
 
 rlJournalStart
     rlPhaseStartSetup
-        if rlIsRHELLike "=<9"; then
+        if rlIsRHELLike "=<9.7"; then
             AIDE_FIRST_CONF=aide_rhel_9_first.conf
             AIDE_SECOND_CONF=aide_rhel_9_second.conf
         fi

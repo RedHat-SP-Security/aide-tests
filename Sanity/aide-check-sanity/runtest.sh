@@ -37,7 +37,7 @@ rlJournalStart && {
   rlPhaseStartSetup && {
     rlAssertRpm $PACKAGE
     AIDE_TEST_DIR="/var/aide-testing-dir"
-    if rlIsRHELLike "=<9"; then
+    if rlIsRHELLike "=<9.7"; then
       AIDE_CONF=aide_rhel_9.conf
     fi
     if [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
@@ -73,6 +73,14 @@ rlJournalStart && {
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file2;SHA256_old=O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD68ELkoXpCHc=;SHA256_new=wM3nf6j++X1HbBCq09LVT8wvM2FA0HNlHC3Mzx43n9Y=" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file3;Perm_old=-rw-rw-rw-;Perm_new=-rwxrwxrwx" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file4; added" $rlRun_LOG
+    elif rlIsFedora ">41"; then
+      rlAssertGrep "f-----------------: /var/aide-testing-dir/data/file1" $rlRun_LOG
+      rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
+ SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
+             68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
+      rlAssertGrep "File: $AIDE_TEST_DIR/data/file3\n
+ Perm      : -rw-rw-rw-                       | -rwxrwxrwx" $rlRun_LOG
+      rlAssertGrep "f+++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
     else
       rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
       rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
