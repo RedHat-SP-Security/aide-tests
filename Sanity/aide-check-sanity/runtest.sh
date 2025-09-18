@@ -68,12 +68,12 @@ rlJournalStart && {
 
   rlPhaseStartTest "aide check" && {
     rlRun -s "aide --check -c $AIDE_TEST_DIR/aide.conf" 0-255
-    if rlIsRHELLike "=<9"; then
+    if rlIsRHELLike "<9.8" ; then
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file1; removed" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file2;SHA256_old=O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD68ELkoXpCHc=;SHA256_new=wM3nf6j++X1HbBCq09LVT8wvM2FA0HNlHC3Mzx43n9Y=" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file3;Perm_old=-rw-rw-rw-;Perm_new=-rwxrwxrwx" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file4; added" $rlRun_LOG
-    elif rlIsFedora ">41"; then
+    elif rlIsFedora ">41" || rlIsRHELLike '>=9.8'; then
       rlAssertGrep "f-----------------: /var/aide-testing-dir/data/file1" $rlRun_LOG
       rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
