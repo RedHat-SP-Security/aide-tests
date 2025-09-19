@@ -1,0 +1,16 @@
+summary: Test for RHEL-76014 (Aide crash when it's used http link as database)
+description: |
+contact: Patrik Koncity <pkoncity@redhat.com>
+component:
+  - aide
+test: ./runtest.sh
+require+:
+  - aide
+  - openssl
+  - python3
+duration: 5m
+enabled: true
+adjust+:
+  - enabled: false
+    when: distro < rhel-9.8
+    continue: false
