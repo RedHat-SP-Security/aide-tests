@@ -21,6 +21,9 @@ adjust:
   - enabled: false
     when: distro < rhel-9
     continue: false
+  - enabled: false
+    when: distro < fedora-43
+    continue: false
 extra-nitrate: TC#0610996
 extra-summary: /CoreOS/aide/Regression/Check-no-weird-lines-in-etc-aide-conf
 extra-task: /CoreOS/aide/Regression/Check-no-weird-lines-in-etc-aide-conf
