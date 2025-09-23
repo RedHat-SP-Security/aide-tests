@@ -1,0 +1,20 @@
+summary: aide detects SIGBUS but dont exit when a file gets truncated
+description: ''
+contact: Patrik Koncity <pkoncity@redhat.com>
+test: ./runtest.sh
+require:
+  - aide
+duration: 5m
+enabled: true
+tag:
+  - NoRHEL4
+  - NoRHEL5
+  - NoRHEL6
+  - NoRHEL8
+link:
+  - verifies: https://issues.redhat.com/browse/RHEL-1383
+  - verifies: https://issues.redhat.com/browse/RHEL-1569
+adjust+:
+  - enabled: false
+    when: distro < rhel-9.8 or distro < fedora-rawhide
+    continue: false
