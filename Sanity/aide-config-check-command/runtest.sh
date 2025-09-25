@@ -62,13 +62,13 @@ rlJournalStart
     rlPhaseStartTest "Passing non-existing filepath"
         rlRun -s "aide -D -c /nosuchfile" 17,18
         rlRun "cat $rlRun_LOG"
-	if rlIsRHELLike "=<9"; then
+	      if rlIsRHELLike "<9.8"; then
           rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E
           rlAssertGrep "No config defined" $rlRun_LOG
           rlAssertGrep "Configuration error" $rlRun_LOG
-	else
+	      else
           rlAssertGrep "ERROR: cannot open config file '/nosuchfile': No such file or directory" $rlRun_LOG
-	fi
+	      fi
     rlPhaseEnd
 
     rlPhaseStartCleanup
