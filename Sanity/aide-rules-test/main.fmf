@@ -10,7 +10,7 @@ recommend:
 duration: 15m
 enabled: true
 adjust+:
--   when: distro >= 9.8 or distro >= centos-stream-9 or distro == fedora
+-   when: distro >= rhel-9.8 or distro >= centos-stream-9 or distro == fedora
     enabled: false
 tier: '1'
 extra-task: /CoreOS/aide/Sanity/aide-rules-test
