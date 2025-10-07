@@ -63,7 +63,13 @@ rlJournalStart
         # download bootc image and build and install an update
         rlRun "bootc image copy-to-storage"
         rlRun -s "podman build -t localhost/test ."
-        rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
+        if rlIsRHELLike "<9.8" ; then
+            rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
+            rlAssertGrep "f++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
+        else
+            rlAssertGrep "f-----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
+            rlAssertGrep "f+++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
+        fi
         rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
              68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
@@ -74,7 +80,6 @@ rlJournalStart
             rlAssertGrep "File: $AIDE_TEST_DIR/data/file3\n
  Perm      : -rw-r--r--                       | -rwxr-xr-x" $rlRun_LOG
         fi
-        rlAssertGrep "f++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
         rm -f $rlRun_LOG
         rlRun "bootc switch --transport containers-storage localhost/test"
         rlRun "aide -i -c $AIDE_TEST_DIR/aide.conf"
