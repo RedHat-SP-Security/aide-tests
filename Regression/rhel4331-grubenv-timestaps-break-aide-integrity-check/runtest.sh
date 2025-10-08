@@ -33,21 +33,13 @@ AIDE_CONF="/etc/aide.conf"
 GRUB_SYMLINK_PATH="/etc/systemd/system/grub-boot-success.service"
 
 DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-if rlIsRHELLike "=<9"; then
-  DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
-else
-  DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
-fi
-DB="${DBDIR}/${DB}"
-
-DBnew=$(grep "^database_out=" "$AIDE_CONF" | cut -d/ -f2-)
-DBnew="${DBDIR}/${DBnew}"
+DB="${DBDIR}/aide.db.gz"
+DBnew="${DBDIR}/aide.db.new.gz"
 
 aideInit() {
     rlRun -s "aide -i" 0 "AIDE database initialization"
     [ -f "$DBnew" ] || rlFail "New database is not initialized"
     [ -n "$DB" ] || rlFail "Database path is not set correctly"
-
     rlRun "mv ${DBnew} ${DB}" 0 "Move new AIDE initialed database to the place of the default one."
     rlRun "rm $rlRun_LOG"
 }
@@ -64,9 +56,9 @@ rlJournalStart
         rlAssertRpm $PACKAGE
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
         if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
-            rlRun "echo \"CONTENTEX = sha256+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
+            rlRun "sed -i '\$aCONTENTEX = sha256+p+u+g+n+acl+selinux+xattrs' ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
         fi
-        rlRun "echo '/boot/grub2/grubenv CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
+        rlRun "sed -i '\$a/boot/grub2/grubenv CONTENTEX' ${AIDE_CONF}" 0 "Add just one path aide the config"
         rlRun "ln -s /usr/lib/systemd/user/grub-boot-success.service ${GRUB_SYMLINK_PATH}"
         rlRun "systemctl enable grub-boot-success.service"
         #Provide initialization of database
