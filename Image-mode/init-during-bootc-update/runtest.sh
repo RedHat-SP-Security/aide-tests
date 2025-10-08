@@ -96,7 +96,13 @@ rlJournalStart
         rlRun "echo 'B' > $AIDE_TEST_DIR/data/file2"
         rlRun "chmod a+x $AIDE_TEST_DIR/data/file3"
         rlRun -s "aide --check -c $AIDE_TEST_DIR/aide.conf" 0-255
-        rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
+        if rlIsRHELLike "<9.8" ; then
+            rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
+            rlAssertGrep "f++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
+        else
+            rlAssertGrep "f-----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
+            rlAssertGrep "f+++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
+        fi
         rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
              68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
@@ -107,7 +113,6 @@ rlJournalStart
             rlAssertGrep "File: $AIDE_TEST_DIR/data/file3\n
  Perm      : -rw-rw-rw-                       | -rwxrwxrwx" $rlRun_LOG
         fi
-        rlAssertGrep "f++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
         rm -f $rlRun_LOG
         rlRun "rm $COOKIE"
     rlPhaseEnd
