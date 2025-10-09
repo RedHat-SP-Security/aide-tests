@@ -73,7 +73,7 @@ rlJournalStart
         rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
              68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
-        if rlIsRHELLike "=<9"; then
+        if rlIsRHELLike "<9.8"; then
             rlAssertGrep "File: $AIDE_TEST_DIR/data/file3\n
  Perm     : -rw-r--r--                       | -rwxr-xr-x" $rlRun_LOG
         else
@@ -106,7 +106,7 @@ rlJournalStart
         rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
              68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
-         if rlIsRHELLike "=<9"; then
+         if rlIsRHELLike "<9.8"; then
             rlAssertGrep "File: $AIDE_TEST_DIR/data/file3\n
  Perm     : -rw-rw-rw-                       | -rwxrwxrwx" $rlRun_LOG
         else
