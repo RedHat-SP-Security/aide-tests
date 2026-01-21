@@ -46,6 +46,11 @@ rlJournalStart && {
         fi
         if rlIsRHELLike "=<9"; then
             rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+            rlLog "(adding @@end_db)"
+            rlRun "zcat $AIDE_TEST_DIR/db/aide.db.gz > /tmp/aide.db.tmp"
+            rlRun "echo '@@end_db' >> /tmp/aide.db.tmp"
+            rlRun "gzip -c /tmp/aide.db.tmp > $AIDE_TEST_DIR/db/aide.db.gz"
+            rlRun "rm -f /tmp/aide.db.tmp"
         fi
     fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
