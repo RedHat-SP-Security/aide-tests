@@ -40,43 +40,33 @@ rlJournalStart && {
     if rlIsRHELLike "=<9.7"; then
       AIDE_CONF=aide_rhel_9.conf
     fi
-    if [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
-        if rlIsRHELLike ">=10"; then
-          rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
-        fi
-        if rlIsRHELLike "=<9"; then
-            rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
-        fi
-    fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
       rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
-      rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
-      rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
-      rlRun "touch $AIDE_TEST_DIR/data/empty_file"
-      rlRun "echo 'x' > $AIDE_TEST_DIR/data/file1"
-      rlRun "echo 'y' > $AIDE_TEST_DIR/data/file2"
-      rlRun "echo 'z' > $AIDE_TEST_DIR/data/file3"
-      rlRun "chmod a=rw $AIDE_TEST_DIR/data/*"
-      rlRun "aide -i -c $AIDE_TEST_DIR/aide.conf"
-      rlRun "mv -f $AIDE_TEST_DIR/db/aide.db.out.gz $AIDE_TEST_DIR/db/aide.db.gz"
-      rlRun "echo 'A' > $AIDE_TEST_DIR/data/file4"
-      rlRun "rm -f $AIDE_TEST_DIR/data/file1"
-      rlRun "echo 'B' > $AIDE_TEST_DIR/data/file2"
-      rlRun "chmod a+x $AIDE_TEST_DIR/data/file3"
     }
+    rlRun "rm -rf $AIDE_TEST_DIR"
+    rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
+    rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+    rlRun "touch $AIDE_TEST_DIR/data/empty_file"
+    rlRun "echo 'x' > $AIDE_TEST_DIR/data/file1"
+    rlRun "echo 'y' > $AIDE_TEST_DIR/data/file2"
+    rlRun "echo 'z' > $AIDE_TEST_DIR/data/file3"
+    rlRun "chmod a=rw $AIDE_TEST_DIR/data/*"
+    rlRun "aide -i -c $AIDE_TEST_DIR/aide.conf"
+    rlRun "mv -f $AIDE_TEST_DIR/db/aide.db.out.gz $AIDE_TEST_DIR/db/aide.db.gz"
+    rlRun "echo 'A' > $AIDE_TEST_DIR/data/file4"
+    rlRun "rm -f $AIDE_TEST_DIR/data/file1"
+    rlRun "echo 'B' > $AIDE_TEST_DIR/data/file2"
+    rlRun "chmod a+x $AIDE_TEST_DIR/data/file3"
   rlPhaseEnd; }
 
   rlPhaseStartTest "aide check" && {
-    bash
     rlRun -s "aide --check -c $AIDE_TEST_DIR/aide.conf" 0-255
-    bash
     if rlIsRHELLike "<9.8" ; then
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file1; removed" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file2;SHA256_old=O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD68ELkoXpCHc=;SHA256_new=wM3nf6j++X1HbBCq09LVT8wvM2FA0HNlHC3Mzx43n9Y=" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file3;Perm_old=-rw-rw-rw-;Perm_new=-rwxrwxrwx" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file4; added" $rlRun_LOG
     elif rlIsFedora ">41" || rlIsRHELLike '>=9.8'; then
-    bash
       rlAssertGrep "f-----------------: /var/aide-testing-dir/data/file1" $rlRun_LOG
       rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
