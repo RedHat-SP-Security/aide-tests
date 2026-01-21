@@ -46,6 +46,11 @@ rlJournalStart && {
         fi
         if rlIsRHELLike "=<9"; then
             rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+            rlLog "(adding @@end_db)"
+            rlRun "zcat $AIDE_TEST_DIR/db/aide.db.gz > /tmp/aide.db.tmp"
+            rlRun "echo '@@end_db' >> /tmp/aide.db.tmp"
+            rlRun "gzip -c /tmp/aide.db.tmp > $AIDE_TEST_DIR/db/aide.db.gz"
+            rlRun "rm -f /tmp/aide.db.tmp"
         fi
     fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
@@ -74,19 +79,12 @@ rlJournalStart && {
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file3;Perm_old=-rw-rw-rw-;Perm_new=-rwxrwxrwx" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file4; added" $rlRun_LOG
     elif rlIsFedora ">41" || rlIsRHELLike '>=9.8'; then
-    bash
-    cat /var/aide-testing-dir/data/file1
       rlAssertGrep "f-----------------: /var/aide-testing-dir/data/file1" $rlRun_LOG
-      bash
-      cat /var/aide-testing-dir/data/file2
       rlAssertGrep "File: $AIDE_TEST_DIR/data/file2\n
  SHA256    : O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD | wM3nf6j++X1HbBCq09LVT8wvM2FA0HNl\n
              68ELkoXpCHc=                     | HC3Mzx43n9Y=" $rlRun_LOG
-             rlRun "bash"
-             rlRun "cat /var/aide-testing-dir/data/file3"
       rlAssertGrep "File: $AIDE_TEST_DIR/data/file3\n
  Perm      : -rw-rw-rw-                       | -rwxrwxrwx" $rlRun_LOG
- cat /var/aide-testing-dir/data/file4
       rlAssertGrep "f+++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG
     else
       rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
