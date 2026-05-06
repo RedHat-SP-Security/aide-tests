@@ -5,6 +5,7 @@ test: ./runtest.sh
 require+:
   - library(distribution/testUser)
 tag:
+  - fips
   - CI-Tier-1
   - Tier1
 recommend:
