@@ -9,6 +9,7 @@ require+:
 duration: 5m
 enabled: true
 tag:
+  - fips
   - NoRHEL6
   - NoRHEL7
   - NoRHEL8

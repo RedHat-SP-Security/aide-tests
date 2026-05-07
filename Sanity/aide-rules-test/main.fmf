@@ -14,3 +14,5 @@ adjust+:
     enabled: false
 tier: '1'
 extra-task: /CoreOS/aide/Sanity/aide-rules-test
+tag:
+  - fips
