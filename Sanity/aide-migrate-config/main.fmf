@@ -1,0 +1,33 @@
+summary: tests aide-migrate-config migration tool from pre-0.19 config
+description: |
+    Validates that aide-migrate-config correctly migrates a legacy 0.16-style
+    configuration to 0.19.2+ syntax. Tests include:
+    - Legacy config fails aide --config-check and --init
+    - Migration tool succeeds and passes config-check
+    - Removed config options are renamed correctly
+    - Removed and deprecated hashsums are stripped
+    - Empty groups get sha256 fallback
+    - S attribute replaced with growing+s
+    - Deprecated preprocessor macros replaced
+    - e2fsattrs h attribute removed
+    - aide --init and --check succeed after migration
+    - Backup file is created
+contact: Patrik Koncity <pkoncity@redhat.com>
+test: ./runtest.sh
+require:
+  - aide
+duration: 5m
+enabled: true
+tag:
+  - CI-Tier-1
+  - Tier1
+adjust:
+  - enabled: false
+    when: distro < rhel-9.9
+    because: aide-migrate-config is available from this version
+  - enabled: false
+    when: distro < rhel-10.3 and distro >= rhel-10
+    because: aide-migrate-config is available from this version
+  - enabled: false
+    when: distro == fedora
+    because: aide-migrate-config is not shipped in Fedora
