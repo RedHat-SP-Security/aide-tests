@@ -45,24 +45,26 @@ rlJournalStart && {
           rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
         fi
         if rlIsRHELLike "=<9"; then
+            # Verify %post automatically migrated the default /etc/aide.conf
+            if command -v aide-migrate-config &>/dev/null; then
+                if [ -f /var/log/aide/aide-migrate.log ]; then
+                    rlRun "cat /var/log/aide/aide-migrate.log" 0 \
+                        "Show automatic migration log from %post"
+                fi
+                rlRun "aide --config-check -c /etc/aide.conf" 0 \
+                    "Default config must be valid after package upgrade"
+            fi
             rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
             rlLog "(adding @@end_db)"
             rlRun "zcat $AIDE_TEST_DIR/db/aide.db.gz > /tmp/aide.db.tmp"
             rlRun "echo '@@end_db' >> /tmp/aide.db.tmp"
             rlRun "gzip -c /tmp/aide.db.tmp > $AIDE_TEST_DIR/db/aide.db.gz"
             rlRun "rm -f /tmp/aide.db.tmp"
-        fi
-        # Verify %post automatically migrated the default /etc/aide.conf
-        if command -v aide-migrate-config &>/dev/null; then
-            if [ -f /var/log/aide/aide-migrate.log ]; then
-                rlRun "cat /var/log/aide/aide-migrate.log" 0 \
-                    "Show automatic migration log from %post"
-            fi
-            rlRun "aide --config-check -c /etc/aide.conf" 0 \
-                "Default config must be valid after package upgrade"
             # Migrate the test config to 0.19+ syntax
-            rlRun "aide-migrate-config --skip-init $AIDE_TEST_DIR/aide.conf" 0 \
-                "Migrate test config to 0.19+ syntax"
+            if command -v aide-migrate-config &>/dev/null; then
+                rlRun "aide-migrate-config --skip-init $AIDE_TEST_DIR/aide.conf" 0 \
+                    "Migrate test config to 0.19+ syntax"
+            fi
         fi
     fi
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
