@@ -42,7 +42,7 @@ rlJournalStart && {
     fi
     if [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
         if rlIsRHELLike ">=10"; then
-          rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+          rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
         fi
         if rlIsRHELLike "=<9"; then
             # Verify %post automatically migrated the default /etc/aide.conf
@@ -54,7 +54,7 @@ rlJournalStart && {
                 rlRun "aide --config-check -c /etc/aide.conf" 0 \
                     "Default config must be valid after package upgrade"
             fi
-            rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+            rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
             rlLog "(adding @@end_db)"
             rlRun "zcat $AIDE_TEST_DIR/db/aide.db.gz > /tmp/aide.db.tmp"
             rlRun "echo '@@end_db' >> /tmp/aide.db.tmp"
@@ -70,7 +70,7 @@ rlJournalStart && {
     [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
       rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
       rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
-      rlRun "mv $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
+      rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
       rlRun "touch $AIDE_TEST_DIR/data/empty_file"
       rlRun "echo 'x' > $AIDE_TEST_DIR/data/file1"
       rlRun "echo 'y' > $AIDE_TEST_DIR/data/file2"
