@@ -21,6 +21,7 @@ enabled: true
 tag:
   - CI-Tier-1
   - Tier1
+  - ImageMode
 adjust:
   - enabled: false
     when: distro < rhel-9.9
