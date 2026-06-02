@@ -22,6 +22,8 @@ tag:
   - CI-Tier-1
   - Tier1
   - ImageMode
+link:
+  - verifies: https://issues.redhat.com/browse/RHEL-83776
 adjust:
   - enabled: false
     when: distro < rhel-9.9
