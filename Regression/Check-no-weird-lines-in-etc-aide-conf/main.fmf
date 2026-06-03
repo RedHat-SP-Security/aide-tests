@@ -22,8 +22,8 @@ adjust:
     when: distro < rhel-9
     continue: false
   - enabled: false
-    when: distro < fedora-43
-    continue: false
+    when: distro == fedora
+    because: aide-migrate-config is not shipped in Fedora
 extra-nitrate: TC#0610996
 extra-summary: /CoreOS/aide/Regression/Check-no-weird-lines-in-etc-aide-conf
 extra-task: /CoreOS/aide/Regression/Check-no-weird-lines-in-etc-aide-conf
