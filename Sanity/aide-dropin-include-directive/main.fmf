@@ -1,0 +1,18 @@
+summary: Test aide drop-in include directive and /etc/aide.d properties
+contact: Attila Lakatos <alakatos@redhat.com>
+test: ./runtest.sh
+require+:
+  - aide
+duration: 5m
+enabled: true
+tag:
+  - CI-Tier-1
+  - Tier1
+tier: '1'
+adjust:
+  - enabled: false
+    when: distro < rhel-9.9
+    continue: false
+  - enabled: false
+    when: distro >= rhel-10 and distro < rhel-10.3
+    continue: false
