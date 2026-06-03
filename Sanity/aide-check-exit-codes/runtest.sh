@@ -119,6 +119,65 @@ rlJournalStart
         rlRun "rm ${testingFile}"
     rlPhaseEnd
 
+    rlPhaseStartTest "Checking exit code 3 (added + removed files detected)"
+        rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
+        aideInit
+        aideCheck
+
+        rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
+        rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
+        rlRun -s "aide" 3 "Recheck -- one added, one removed"
+        rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
+        rlRun "rm $rlRun_LOG"
+
+        rlRun "rm ${testingFileB}"
+    rlPhaseEnd
+
+    rlPhaseStartTest "Checking exit code 5 (added + changed files detected)"
+        rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
+        aideInit
+        aideCheck
+
+        rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
+        rlRun "echo 'test data' > ${testingFileA}" 0 "Modify file A - was in database"
+        rlRun -s "aide" 5 "Recheck -- one added, one changed"
+        rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
+        rlRun "rm $rlRun_LOG"
+
+        rlRun "rm ${testingFileA} ${testingFileB}"
+    rlPhaseEnd
+
+    rlPhaseStartTest "Checking exit code 6 (removed + changed files detected)"
+        rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
+        rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
+        aideInit
+        aideCheck
+
+        rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
+        rlRun "echo 'test data' > ${testingFileB}" 0 "Modify file B - was in database"
+        rlRun -s "aide" 6 "Recheck -- one removed, one changed"
+        rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
+        rlRun "rm $rlRun_LOG"
+
+        rlRun "rm ${testingFileB}"
+    rlPhaseEnd
+
+    rlPhaseStartTest "Checking exit code 7 (added + removed + changed files detected)"
+        rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
+        rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
+        aideInit
+        aideCheck
+
+        rlRun "testingFileC=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file C - will be new since last init"
+        rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
+        rlRun "echo 'test data' > ${testingFileB}" 0 "Modify file B - was in database"
+        rlRun -s "aide" 7 "Recheck -- one added, one removed, one changed"
+        rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
+        rlRun "rm $rlRun_LOG"
+
+        rlRun "rm ${testingFileB} ${testingFileC}"
+    rlPhaseEnd
+
     rlPhaseStartTest "Checking exit code 15 (Invalid argument error)"
         rlRun "aide blahblah" 15
     rlPhaseEnd
