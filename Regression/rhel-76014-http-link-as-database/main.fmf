@@ -16,3 +16,6 @@ adjust+:
   - enabled: false
     when: distro < rhel-9.8
     continue: false
+  - enabled: false
+    when: distro == fedora
+    because: patch was fixed just for RHEL, fix its not shipped in fedora
