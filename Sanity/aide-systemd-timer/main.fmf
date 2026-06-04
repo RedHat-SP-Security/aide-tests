@@ -1,0 +1,22 @@
+summary: Verify aide-check.service and aide-check.timer are shipped and behave correctly
+contact: Attila Lakatos <alakatos@redhat.com>
+test: ./runtest.sh
+require+:
+  - aide
+  - systemd
+duration: 15m
+enabled: true
+tag:
+  - CI-Tier-1
+  - Tier1
+tier: '1'
+adjust:
+  - enabled: false
+    when: distro < rhel-9.9
+    continue: false
+  - enabled: false
+    when: distro >= rhel-10 and distro < rhel-10.3
+    continue: false
+  - enabled: false
+    when: distro < fedora-45
+    continue: false

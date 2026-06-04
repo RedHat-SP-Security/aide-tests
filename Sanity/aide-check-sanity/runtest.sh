@@ -112,6 +112,33 @@ rlJournalStart && {
     rm -f $rlRun_LOG
   rlPhaseEnd; }
 
+  # num_workers support: RHEL 9.9+ and 10.3+ only; 10.0-10.2 lack the implementation
+  if { rlIsRHELLike ">=9.9" && ! rlIsRHELLike ">=10"; } || rlIsRHELLike ">=10.3" || rlIsFedora ">=45"; then
+    rlPhaseStartTest "num_workers set in default /etc/aide.conf" && {
+      rlRun "grep -E '^[[:space:]]*num_workers[[:space:]]*=' /etc/aide.conf" 0 \
+        "num_workers must be present in /etc/aide.conf"
+      NUM_W=$(grep -E '^[[:space:]]*num_workers[[:space:]]*=' /etc/aide.conf \
+              | awk -F'=' '{print $2}' | tr -d '[:space:]')
+      rlRun "[[ '$NUM_W' -ne 1 ]]" 0 \
+        "num_workers must not be 1 in default config, got: $NUM_W"
+    rlPhaseEnd; }
+
+    rlPhaseStartTest "aide --init with 4 workers is faster than with 1 worker" && {
+      T_START=$(date +%s%3N)
+      rlRun "aide --init -W 1" 0 "aide --init with 1 worker"
+      T1=$(( $(date +%s%3N) - T_START ))
+      rlLog "Time with 1 worker: ${T1} ms"
+
+      T_START=$(date +%s%3N)
+      rlRun "aide --init -W 4" 0 "aide --init with 4 workers"
+      T4=$(( $(date +%s%3N) - T_START ))
+      rlLog "Time with 4 workers: ${T4} ms"
+
+      rlRun "[[ $T4 -lt $T1 ]]" 0 \
+        "4 workers (${T4}ms) must be faster than 1 worker (${T1}ms)"
+    rlPhaseEnd; }
+  fi
+
   [[ -z "$IN_PLACE_UPGRADE" ]] && rlPhaseStartCleanup && {
     rlRun "rlFileRestore"
     rlRun "rm -rf $AIDE_TEST_DIR"
