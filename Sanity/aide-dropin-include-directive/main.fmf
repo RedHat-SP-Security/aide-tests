@@ -16,3 +16,6 @@ adjust:
   - enabled: false
     when: distro >= rhel-10 and distro < rhel-10.3
     continue: false
+  - enabled: false
+    when: distro < fedora-45
+    continue: false

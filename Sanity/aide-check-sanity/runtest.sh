@@ -113,7 +113,7 @@ rlJournalStart && {
   rlPhaseEnd; }
 
   # num_workers support: RHEL 9.9+ and 10.3+ only; 10.0-10.2 lack the implementation
-  if { rlIsRHELLike ">=9.9" && ! rlIsRHELLike ">=10"; } || rlIsRHELLike ">=10.3"; then
+  if { rlIsRHELLike ">=9.9" && ! rlIsRHELLike ">=10"; } || rlIsRHELLike ">=10.3" || rlIsFedora ">=45"; then
     rlPhaseStartTest "num_workers set in default /etc/aide.conf" && {
       rlRun "grep -E '^[[:space:]]*num_workers[[:space:]]*=' /etc/aide.conf" 0 \
         "num_workers must be present in /etc/aide.conf"

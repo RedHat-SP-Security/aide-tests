@@ -119,6 +119,7 @@ rlJournalStart
         rlRun "rm ${testingFile}"
     rlPhaseEnd
 
+    if ! rlIsFedora || rlIsFedora ">=45"; then
     rlPhaseStartTest "Checking exit code 3 (added + removed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         aideInit
@@ -177,6 +178,7 @@ rlJournalStart
 
         rlRun "rm ${testingFileB} ${testingFileC}"
     rlPhaseEnd
+    fi
 
     rlPhaseStartTest "Checking exit code 15 (Invalid argument error)"
         rlRun "aide blahblah" 15
