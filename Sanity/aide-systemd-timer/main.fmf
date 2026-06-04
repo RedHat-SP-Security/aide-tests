@@ -4,7 +4,7 @@ test: ./runtest.sh
 require+:
   - aide
   - systemd
-duration: 10m
+duration: 15m
 enabled: true
 tag:
   - CI-Tier-1

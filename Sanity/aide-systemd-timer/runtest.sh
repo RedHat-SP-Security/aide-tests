@@ -103,6 +103,23 @@ rlJournalStart && {
       "Service Result must be 'success' when aide detects changes, got: $RESULT"
   rlPhaseEnd; }
 
+  rlPhaseStartTest "Timer fires and triggers aide-check.service" && {
+    rlRun "printf '[Timer]\nOnCalendar=\nOnCalendar=minutely\nAccuracySec=1s\n' \
+      | systemctl edit --stdin --drop-in=ci-test-override.conf $TIMER_UNIT" 0 \
+      "Install minutely OnCalendar drop-in (daemon-reload done automatically)"
+    BEFORE=$(date '+%s')
+    rlRun "systemctl enable --now $TIMER_UNIT" 0 "Enable and start the timer"
+    rlLog "Waiting 90s for timer to fire at the next minute boundary"
+    sleep 90
+    rlRun -s "journalctl -u $SERVICE_UNIT --since @${BEFORE} --no-pager" 0 \
+      "Collect journal entries since timer was enabled"
+    rlAssertGrep "aide-check.service" $rlRun_LOG
+    rm -f $rlRun_LOG
+    rlRun "systemctl disable --now $TIMER_UNIT" 0 "Disable timer after check"
+    rlRun "systemctl revert $TIMER_UNIT" 0 \
+      "Remove drop-in and restore unit to package defaults"
+  rlPhaseEnd; }
+
   rlPhaseStartCleanup && {
     rlRun "systemctl disable --now $TIMER_UNIT" 0,1 \
       "Disable timer (idempotent if never enabled)"
