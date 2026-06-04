@@ -26,10 +26,10 @@ link:
   - verifies: https://issues.redhat.com/browse/RHEL-83776
 adjust:
   - enabled: false
-    when: distro < rhel-9.9
+    when: distro < rhel-9.8
     because: aide-migrate-config is available from this version
   - enabled: false
-    when: distro < rhel-10.3 and distro >= rhel-10
+    when: distro < rhel-10.2 and distro >= rhel-10
     because: aide-migrate-config is available from this version
   - enabled: false
     when: distro == fedora
