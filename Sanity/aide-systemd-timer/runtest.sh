@@ -104,9 +104,12 @@ rlJournalStart && {
   rlPhaseEnd; }
 
   rlPhaseStartTest "Timer fires and triggers aide-check.service" && {
+    DROPIN_DIR="/etc/systemd/system/${TIMER_UNIT}.d"
+    rlRun "mkdir -p ${DROPIN_DIR}" 0 "Create drop-in directory"
     rlRun "printf '[Timer]\nOnCalendar=\nOnCalendar=minutely\nAccuracySec=1s\n' \
-      | systemctl edit --stdin --drop-in=ci-test-override.conf $TIMER_UNIT" 0 \
-      "Install minutely OnCalendar drop-in (daemon-reload done automatically)"
+      > ${DROPIN_DIR}/ci-test-override.conf" 0 \
+      "Install minutely OnCalendar drop-in"
+    rlRun "systemctl daemon-reload" 0 "Reload daemon after drop-in install"
     BEFORE=$(date '+%s')
     rlRun "systemctl enable --now $TIMER_UNIT" 0 "Enable and start the timer"
     rlLog "Waiting 90s for timer to fire at the next minute boundary"
