@@ -48,12 +48,13 @@ rlJournalStart
         rlRun "chmod -R a=rwx $TEST_DIR/" 0 "Adding permissions for testing directory"
         rlRun "sed -i 's|@@define DBDIR .*|@@define DBDIR $TEST_DIR/db|' $TEST_DIR/aide.conf" 0
         rlRun "sed -i 's|@@define LOGDIR .*|@@define LOGDIR $TEST_DIR/log|' $TEST_DIR/aide.conf" 0
+        rlRun "testUserSetup"
         # Redirect @@include to a user-accessible directory (aide.d is 0700 root:root since RHEL-9.9/10.3)
         if rlIsRHELLike ">=9.9" || rlIsRHELLike ">=10.3"; then
-            rlRun "mkdir -p -m0777 $TEST_DIR/aide.d"
+            rlRun "mkdir -p -m0700 $TEST_DIR/aide.d"
+            rlRun "chown $testUser $TEST_DIR/aide.d"
             rlRun "sed -i 's|/etc/aide\.d|${TEST_DIR}/aide.d|' $TEST_DIR/aide.conf" 0
         fi
-        rlRun "testUserSetup"
         rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
         rlRun "chmod a=r $TEST_DIR/data/random.txt"
         echo 'int main(void) { return 0; }' > $TEST_DIR/main.c
