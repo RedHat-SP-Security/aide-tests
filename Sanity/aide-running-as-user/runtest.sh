@@ -50,7 +50,7 @@ rlJournalStart
         rlRun "sed -i 's|@@define LOGDIR .*|@@define LOGDIR $TEST_DIR/log|' $TEST_DIR/aide.conf" 0
         rlRun "testUserSetup"
         # Redirect @@include to a user-accessible directory (aide.d is 0700 root:root since RHEL-9.9/10.3)
-        if rlIsRHELLike ">=9.9" || rlIsRHELLike ">=10.3"; then
+        if rlIsRHELLike ">=9.9" || rlIsRHELLike ">=10.3" || rlIsFedora ">=45"; then
             rlRun "mkdir -p -m0700 $TEST_DIR/aide.d"
             rlRun "chown $testUser $TEST_DIR/aide.d"
             rlRun "sed -i 's|/etc/aide\.d|${TEST_DIR}/aide.d|' $TEST_DIR/aide.conf" 0
