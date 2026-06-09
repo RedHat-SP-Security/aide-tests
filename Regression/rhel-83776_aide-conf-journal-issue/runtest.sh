@@ -66,6 +66,7 @@ rlJournalStart
         rlPhaseStartTest "Check issue after reboot and journalctl rotate"
             pushd $AIDE_TEST_DIR
             rlRun "rm $COOKIE"
+            rlRun "systemctl is-system-running --wait" 0-1 "Wait for system to fully boot"
             rlRun "aide --config=aide.conf --init"
             rlRun "journalctl --rotate"
             rlRun "mv /var/aide-testing-dir/aide.db.new.gz /var/aide-testing-dir/aide.db.gz"
