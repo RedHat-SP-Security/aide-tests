@@ -1,0 +1,4 @@
+PURPOSE of /CoreOS/aide/Regression/RHEL-141678-aide-threading-performance
+Description: This test verifies that the default multi-threading in AIDE does not cause a significant performance regression during database initialization, as reported in RHEL-141678.
+Author: QE Automation <sec-eng-special@redhat.com>
+Bug: https://issues.redhat.com/browse/RHEL-141678
