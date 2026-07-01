@@ -1,5 +1,8 @@
 summary: RHEL-1382 and RHEL-59170 regression test
-description: Verify that aide --init correctly measures files without producing gnutls hash warnings for unsupported algorithms and that the resulting database is not empty.
+description: |
+    Verify that aide --init correctly measures files without producing
+    gnutls hash warnings for unsupported algorithms and that the resulting
+    database is not empty.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - aide

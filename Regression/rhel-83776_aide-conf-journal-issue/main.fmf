@@ -1,5 +1,8 @@
 summary: Check that aide databse don't contain journal logs
-description: Verify that aide database does not include journal log or logrotate entries that would cause false positive integrity change reports after reboot or journal rotation.
+description: |
+    Verify that aide database does not include journal log or logrotate
+    entries that would cause false positive integrity change reports after
+    reboot or journal rotation.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - aide

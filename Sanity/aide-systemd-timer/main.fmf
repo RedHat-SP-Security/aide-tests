@@ -1,5 +1,9 @@
 summary: Verify aide-check.service and aide-check.timer are shipped and behave correctly
-description: Verify that aide-check.service and aide-check.timer unit files are shipped, the timer is disabled by default, the service has correct directives and handles non-zero aide exit codes as success, and the timer correctly triggers periodic aide checks.
+description: |
+    Verify that aide-check.service and aide-check.timer unit files are
+    shipped, the timer is disabled by default, the service has correct
+    directives and handles non-zero aide exit codes as success, and the
+    timer correctly triggers periodic aide checks.
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 require+:

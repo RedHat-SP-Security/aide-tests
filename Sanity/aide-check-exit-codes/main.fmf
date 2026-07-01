@@ -1,5 +1,8 @@
 summary: Check all possible exit codes according to the test coverage.
-description: Verify that aide returns correct bitmask exit codes for all change types including added, removed, changed files and their combinations, as well as error codes for invalid arguments and IO errors.
+description: |
+    Verify that aide returns correct bitmask exit codes for all change
+    types including added, removed, changed files and their combinations,
+    as well as error codes for invalid arguments and IO errors.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:

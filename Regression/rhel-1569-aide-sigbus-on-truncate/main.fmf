@@ -1,5 +1,7 @@
 summary: aide detects SIGBUS but dont exit when a file gets truncated
-description: Verify that aide handles file truncation during a scan gracefully without crashing with SIGBUS or SIGSEGV.
+description: |
+    Verify that aide handles file truncation during a scan gracefully
+    without crashing with SIGBUS or SIGSEGV.
 contact: Patrik Koncity <pkoncity@redhat.com>
 test: ./runtest.sh
 require:

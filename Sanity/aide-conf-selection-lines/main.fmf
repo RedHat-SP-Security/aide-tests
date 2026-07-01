@@ -1,5 +1,8 @@
 summary: Check the proper file verficaton accroding to the selectors in aide.conf
-description: Verify that aide selection line selectors work correctly - regular '/' paths track files, '!' negation excludes directories, and '=' equals selector monitors only the directory itself without recursion.
+description: |
+    Verify that aide selection line selectors work correctly - regular '/'
+    paths track files, '!' negation excludes directories, and '=' equals
+    selector monitors only the directory itself without recursion.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:

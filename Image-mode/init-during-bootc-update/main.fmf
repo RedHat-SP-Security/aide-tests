@@ -1,6 +1,8 @@
 summary: Aide init during bootc build
-description: Init aide during container bootc build. Scenario check if aide work during
-    build mode and if runtime instance of aide is affected after update.
+description: |
+    Init aide during container bootc build. Scenario check if aide work
+    during build mode and if runtime instance of aide is affected after
+    update.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - aide

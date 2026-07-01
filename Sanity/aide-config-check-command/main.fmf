@@ -1,5 +1,8 @@
 summary: tests aide --config-check command
-description: Verify that aide --config-check validates the default configuration successfully, reports syntax errors for faulty config files, and handles non-existing config file paths gracefully.
+description: |
+    Verify that aide --config-check validates the default configuration
+    successfully, reports syntax errors for faulty config files, and
+    handles non-existing config file paths gracefully.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:

@@ -1,5 +1,9 @@
 summary: Tests if aide properly handles default rules
-description: Verify that aide correctly detects changes to file attributes covered by default rules including permissions, size, checksums, ACLs, SELinux contexts, xattrs, and e2fsattrs, and accurately reports added, removed, and changed entries.
+description: |
+    Verify that aide correctly detects changes to file attributes covered
+    by default rules including permissions, size, checksums, ACLs, SELinux
+    contexts, xattrs, and e2fsattrs, and accurately reports added,
+    removed, and changed entries.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:

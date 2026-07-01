@@ -1,5 +1,8 @@
 summary: Test custom aide groups of what should be checked
-description: Verify that custom group definitions in aide.conf correctly control which attributes are reported on file changes, ensuring each group only monitors the specified properties.
+description: |
+    Verify that custom group definitions in aide.conf correctly control
+    which attributes are reported on file changes, ensuring each group
+    only monitors the specified properties.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:
