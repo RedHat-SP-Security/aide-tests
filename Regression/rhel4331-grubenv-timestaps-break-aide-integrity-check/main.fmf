@@ -1,6 +1,6 @@
 summary: Check /boot/grub2/grubenv's timestamp modification doesn't break aide integrity
     check
-description: ''
+description: Verify that grub-boot-success.service modifying /boot/grub2/grubenv does not cause aide integrity check failures.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - aide

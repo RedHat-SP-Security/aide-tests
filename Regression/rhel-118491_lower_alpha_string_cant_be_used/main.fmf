@@ -1,5 +1,5 @@
 summary: Scenario to check that lower alpha string can be used in AIDE configuration
-description: ''
+description: Verify that aide accepts lowercase alphabetic strings as custom group names in configuration and correctly initializes and checks the database using them.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - aide
