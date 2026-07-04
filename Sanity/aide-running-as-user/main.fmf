@@ -1,5 +1,8 @@
 summary: tests aide --config-check command
-description: ''
+description: |
+    Verify that aide can be executed as a non-root user to initialize,
+    check, and update the database, correctly detecting new files,
+    permission changes, and content modifications.
 contact: Marek Šafařík <msafarik@redhat.com>
 test: ./runtest.sh
 require+:

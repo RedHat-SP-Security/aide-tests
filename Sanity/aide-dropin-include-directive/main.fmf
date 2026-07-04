@@ -1,4 +1,9 @@
 summary: Test aide drop-in include directive and /etc/aide.d properties
+description: |
+    Verify that /etc/aide.d directory has correct permissions and
+    ownership, that drop-in .conf files are loaded and their rules take
+    effect, that improperly permissioned drop-ins are rejected, and that
+    non-.conf files are silently ignored.
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 require+:

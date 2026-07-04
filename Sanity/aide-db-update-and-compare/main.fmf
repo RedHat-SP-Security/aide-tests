@@ -1,5 +1,8 @@
 summary: tests --update and --compare aide commands
-description: ''
+description: |
+    Verify that aide --update detects newly added files and produces an
+    updated database, and that aide --compare correctly identifies
+    differences between two database versions.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 recommend:

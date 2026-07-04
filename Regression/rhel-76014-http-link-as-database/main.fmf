@@ -1,5 +1,8 @@
 summary: Test for RHEL-76014 (Aide crash when it's used http link as database)
 description: |
+    Verify that aide does not crash when an HTTPS URL is used as the
+    database source by starting a local HTTPS server and running aide
+    --check against it.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - aide

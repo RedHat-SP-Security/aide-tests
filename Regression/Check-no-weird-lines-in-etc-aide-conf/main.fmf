@@ -1,5 +1,8 @@
 summary: Check no weird lines in /etc/aide.conf
-description: ''
+description: |
+    Verify that /etc/aide.conf does not contain deprecated, duplicate, or
+    invalid path entries and that all configured paths correspond to files
+    provided by installed packages.
 contact: Martin Zelený <mzeleny@redhat.com>
 component:
   - aide
