@@ -32,35 +32,16 @@
 PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 
-DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-if rlIsRHELLike "=<9.7"; then
-  DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
-else
-  DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
-fi
-DB="${DBDIR}/${DB}"
-
-DBnew=$(grep "^database_out=" "$AIDE_CONF" | cut -d/ -f2-)
-DBnew="${DBDIR}/${DBnew}"
-
-aideInit() {
-    rlRun -s "aide -i" 0 "AIDE database initialization"
-    [ -f "$DBnew" ] || rlFail "New database is not initialized"
-    [ -n "$DB" ] || rlFail "Database path is not set correctly"
-
-    rlRun "mv ${DBnew} ${DB}" 0 "Move new AIDE initialed database to the place of the default one."
-    rlRun "rm $rlRun_LOG"
-}
-
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         AIDE_TEST_DIR="/var/aide-testing-dir"
         rlRun "mkdir -p $AIDE_TEST_DIR/"
         #rlRun "TmpDir=\$(mktemp -d --tmpdir=$AIDE_TEST_DIR/)" 0 "Creating tmp directory"
         rlRun "pushd $AIDE_TEST_DIR"
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
-        rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
+        aideStripPaths ${AIDE_CONF}
         rlRun "sed -i '/^$/d' ${AIDE_CONF}" 0 "Delete empty lines"
 
         if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
