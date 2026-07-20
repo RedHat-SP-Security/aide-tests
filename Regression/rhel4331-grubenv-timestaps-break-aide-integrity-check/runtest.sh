@@ -34,7 +34,7 @@ GRUB_SYMLINK_PATH="/etc/systemd/system/grub-boot-success.service"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlRun "rlImport --all" 0 "Import libraries" || rlDie "cannot continue"
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
         if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
