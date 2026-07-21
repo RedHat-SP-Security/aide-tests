@@ -54,7 +54,7 @@ rlJournalStart
         rlRun "tail -1 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding regular selection line"
         aideInit
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "touch myRoot/untrackedFile"
         rlRun "aide" 1 "Finding untracked file"
@@ -68,10 +68,10 @@ rlJournalStart
         rlRun "aide --config-check" 0 "No harm on changing config - adding negative selection line"
 
         aideInit
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "touch myRoot/dirNotCheck/fileNotToTrack"
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
     rlPhaseEnd
 
     rlPhaseStartTest "Checking selector '=' functionlity"
@@ -81,17 +81,17 @@ rlJournalStart
         rlRun "aide --config-check" 0 "No harm on changing config - adding equals selection line"
 
         aideInit
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "rlFileBackup --clean --namespace chmodChange dirCheckJustThis"
         rlRun "chmod 777 dirCheckJustThis" 0 "Make configuration change on tracked directory"
         rlRun "aide" 4 "Find changed file"
         rlRun "rlFileRestore --namespace chmodChange"
 
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "touch dirCheckJustThis/fileNotToTrack2"
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
     rlPhaseEnd
 
     rlPhaseStartCleanup
