@@ -39,6 +39,7 @@ PATTERN_FILE=./patterns
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\`mktemp -d -p /var/tmp\`" 0 "Creating tmp directory"
 	rlRun "./prepare_test.sh $TmpDir" 0 "Preparing files for the test"
@@ -57,8 +58,7 @@ rlJournalStart
 	chcon -t etc_t $TmpDir/aide.conf
 	chcon -t aide_log_t $TmpDir/log
 
-	rlRun "aide -c $TmpDir/aide.conf -i" 0 "Initializing aide database"
-	rlRun "cp $TmpDir/db/aide.db.new $TmpDir/db/aide.db" 0 "Save aide database"
+	aideInit -c $TmpDir/aide.conf
 
 	sleep 60  # some time delay because of timestamp related tests
 	rlRun "./update_files.sh $TmpDir" 0 "Updating test files"

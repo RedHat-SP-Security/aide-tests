@@ -35,11 +35,10 @@ AIDE_CONF=aide.conf
 
 rlJournalStart && {
   rlPhaseStartSetup && {
+    rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
     rlAssertRpm $PACKAGE
     AIDE_TEST_DIR="/var/aide-testing-dir"
-    if rlIsRHELLike "=<9.7"; then
-      AIDE_CONF=aide_rhel_9.conf
-    fi
+    AIDE_CONF=$(aideGetRhelConfig aide.conf)
     if [[ "${IN_PLACE_UPGRADE,,}" == "new" ]]; then
         if rlIsRHELLike ">=10"; then
           rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
@@ -76,8 +75,7 @@ rlJournalStart && {
       rlRun "echo 'y' > $AIDE_TEST_DIR/data/file2"
       rlRun "echo 'z' > $AIDE_TEST_DIR/data/file3"
       rlRun "chmod a=rw $AIDE_TEST_DIR/data/*"
-      rlRun "aide -i -c $AIDE_TEST_DIR/aide.conf"
-      rlRun "mv -f $AIDE_TEST_DIR/db/aide.db.out.gz $AIDE_TEST_DIR/db/aide.db.gz"
+      aideInit -c $AIDE_TEST_DIR/aide.conf
       rlRun "echo 'A' > $AIDE_TEST_DIR/data/file4"
       rlRun "rm -f $AIDE_TEST_DIR/data/file1"
       rlRun "echo 'B' > $AIDE_TEST_DIR/data/file2"

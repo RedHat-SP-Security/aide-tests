@@ -39,8 +39,7 @@ rlJournalStart
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
-        aideStripPaths ${AIDE_CONF}
-        aideAddContentexGroup ${AIDE_CONF}
+        aidePrepareConfig ${AIDE_CONF}
         AIDE_TEST_DIR="/var/aide-testing-dir"
         rlRun "mkdir -p $AIDE_TEST_DIR"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}

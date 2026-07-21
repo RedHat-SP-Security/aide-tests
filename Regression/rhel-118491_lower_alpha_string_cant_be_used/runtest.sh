@@ -36,6 +36,7 @@ PACKAGE="aide"
 rlJournalStart
 
         rlPhaseStartSetup "Initial setup"
+            rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
             rlAssertRpm $PACKAGE
             rlRun "mkdir -p /var/aide-testing-dir"
             pushd $AIDE_TEST_DIR
@@ -49,8 +50,7 @@ rlJournalStart
         rlPhaseEnd
 
         rlPhaseStartTest "Check issue after reboot and journalctl rotate"
-            rlRun "aide --config=aide.conf --init"
-            rlRun "mv /var/aide-testing-dir/aide.db.new.gz /var/aide-testing-dir/aide.db.gz"
+            aideInit -c aide.conf
             rlRun -s "aide --config=aide.conf --check" 1-255 "Check AIDE database, should fail"
         rlPhaseEnd
 

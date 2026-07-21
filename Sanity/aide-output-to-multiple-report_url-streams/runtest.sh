@@ -38,6 +38,7 @@ PACKAGE="aide"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
 	rlServiceStart rsyslog
@@ -54,8 +55,7 @@ rlJournalStart
 	rlRun "echo hello > $TmpDir/data/to_be_modified"
 	rlRun "touch $TmpDir/data/to_be_removed"
 	# initialize aide
-	rlRun "aide -c $TmpDir/aide.conf -i" 0 "Initializing aide database"
-        rlRun "cp $TmpDir/db/aide.db.new $TmpDir/db/aide.db" 0 "Save aide database"
+	aideInit -c $TmpDir/aide.conf
 	# modify data
 	rlRun "echo bye > $TmpDir/data/to_be_modified"
 	rlRun "rm $TmpDir/data/to_be_removed"

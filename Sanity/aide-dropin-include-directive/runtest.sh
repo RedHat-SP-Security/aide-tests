@@ -36,6 +36,7 @@ WATCH_DIR="/tmp/aide-dropin-test-dir"
 
 rlJournalStart && {
   rlPhaseStartSetup && {
+    rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
     rlAssertRpm $PACKAGE
     rlRun "rlFileBackup --clean /etc/aide.d"
     rlRun "rlFileBackup --clean /var/lib/aide"
@@ -65,9 +66,7 @@ rlJournalStart && {
     rlRun "echo '$WATCH_DIR p+i+n+u+g+s+sha256' > $DROPIN_CONF"
     rlRun "aide --config-check" 0 \
       "Config must be valid with the drop-in present"
-    rlRun "aide --init" 0 "Initialize aide database with drop-in rule active"
-    rlRun "mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz" 0 \
-      "Promote newly initialized database"
+    aideInit
     rlRun "echo 'modified content' > $WATCH_DIR/testfile"
     rlRun -s "aide --check" 4 \
       "aide must detect changes in the drop-in monitored directory"

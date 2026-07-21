@@ -41,13 +41,7 @@ rlJournalStart
         #rlRun "TmpDir=\$(mktemp -d --tmpdir=$AIDE_TEST_DIR/)" 0 "Creating tmp directory"
         rlRun "pushd $AIDE_TEST_DIR"
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
-        aideStripPaths ${AIDE_CONF}
-        rlRun "sed -i '/^$/d' ${AIDE_CONF}" 0 "Delete empty lines"
-
-        if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
-            rlRun "echo \"CONTENTEX = sha256+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
-        fi
-
+        aidePrepareConfig ${AIDE_CONF}
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
         rlRun "aide --config-check" 0 "No harm on changing config - cleaning config"
     rlPhaseEnd

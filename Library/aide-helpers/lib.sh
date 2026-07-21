@@ -247,55 +247,19 @@ aideGetRhelConfig() {
 true <<'=cut'
 =pod
 
-=head2 aideSetupConfig
+=head2 aidePrepareConfig
 
-Copy aide config to destination directory and update DBDIR and LOGDIR
-to point to subdirectories within the destination.
+Prepare aide configuration file for testing. Strips all paths
+and comments, removes empty lines, and adds CONTENTEX group
+if not already present.
 
-    aideSetupConfig DEST_DIR [SOURCE_CONF]
-
-=over
-
-=item DEST_DIR
-
-Destination directory where aide.conf will be copied and db/, log/
-subdirectories will be used.
-
-=item SOURCE_CONF
-
-Path to source aide config file (/etc/aide.conf by default).
-
-=back
-
-Returns 0 when the setup was successful.
-
-=cut
-
-aideSetupConfig() {
-    local DEST="$1"
-    local SRC="${2:-$__INTERNAL_aideConfDefault}"
-    rlRun "cp $SRC $DEST/aide.conf"
-    rlRun "sed -i 's#^@@define DBDIR.*#@@define DBDIR ${DEST}/db#' $DEST/aide.conf"
-    rlRun "sed -i 's#^@@define LOGDIR.*#@@define LOGDIR ${DEST}/log#' $DEST/aide.conf"
-}
-
-
-true <<'=cut'
-=pod
-
-=head2 aideStripDefaultRules
-
-Remove default rules section from aide configuration file.
-Removes everything after the "Next decide what directories/files"
-comment.
-
-    aideStripDefaultRules AIDE_CONF
+    aidePrepareConfig [AIDE_CONF]
 
 =over
 
 =item AIDE_CONF
 
-Path to aide configuration file.
+Path to aide configuration file (/etc/aide.conf by default).
 
 =back
 
@@ -303,124 +267,13 @@ Returns 0.
 
 =cut
 
-aideStripDefaultRules() {
-    local CONF="$1"
-    rlRun "sed -i '/^# Next decide what directories\/files you want in the database./,\$d' $CONF"
-}
-
-
-true <<'=cut'
-=pod
-
-=head2 aideStripPaths
-
-Delete all paths and comments from aide configuration file.
-
-    aideStripPaths AIDE_CONF
-
-=over
-
-=item AIDE_CONF
-
-Path to aide configuration file.
-
-=back
-
-Returns 0.
-
-=cut
-
-aideStripPaths() {
-    local CONF="$1"
+aidePrepareConfig() {
+    local CONF="${1:-$__INTERNAL_aideConfDefault}"
     rlRun "sed -i '/^[/!#]/d' $CONF" 0 "Delete all paths and comments in aide config"
-}
-
-
-true <<'=cut'
-=pod
-
-=head2 aideAddContentexGroup
-
-Add CONTENTEX group definition to aide configuration if not already present.
-
-    aideAddContentexGroup AIDE_CONF
-
-=over
-
-=item AIDE_CONF
-
-Path to aide configuration file.
-
-=back
-
-Returns 0.
-
-=cut
-
-aideAddContentexGroup() {
-    local CONF="$1"
+    rlRun "sed -i '/^$/d' $CONF" 0 "Delete empty lines"
     if ! grep -q -e 'CONTENTEX' "$CONF"; then
         rlRun "echo 'CONTENTEX = sha256+ftype+p+u+g+n+acl+selinux+xattrs' >> $CONF" 0 "Adding CONTENTEX group"
     fi
-}
-
-
-# ~~~~~~~~~~~~~~~~~~~~
-#   Test directory
-# ~~~~~~~~~~~~~~~~~~~~
-
-true <<'=cut'
-=pod
-
-=head2 aideCreateTestDir
-
-Create a test directory with db/, log/, and data/ subdirectories.
-
-    aideCreateTestDir [DIR]
-
-=over
-
-=item DIR
-
-Path to test directory (/var/aide-testing-dir by default).
-
-=back
-
-Prints the test directory path to STDOUT.
-
-=cut
-
-aideCreateTestDir() {
-    local DIR="${1:-/var/aide-testing-dir}"
-    mkdir -p "$DIR/db" "$DIR/log" "$DIR/data"
-    echo "$DIR"
-}
-
-
-true <<'=cut'
-=pod
-
-=head2 aideCleanupTestDir
-
-Remove test directory.
-
-    aideCleanupTestDir [DIR]
-
-=over
-
-=item DIR
-
-Path to test directory (/var/aide-testing-dir by default).
-
-=back
-
-Returns 0.
-
-=cut
-
-aideCleanupTestDir() {
-    local DIR="${1:-/var/aide-testing-dir}"
-    rlRun "rm -rf $DIR" 0 "Removing test directory"
 }
 
 

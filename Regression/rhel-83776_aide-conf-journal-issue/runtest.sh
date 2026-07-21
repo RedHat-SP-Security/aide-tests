@@ -38,6 +38,7 @@ rlJournalStart
 
     if [ ! -e $COOKIE ]; then
         rlPhaseStartSetup "Initial setup"
+            rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
             rlAssertRpm $PACKAGE
             rlRun "mkdir -p /var/aide-testing-dir"
             rlFileBackup --clean "/var/log/"
@@ -49,9 +50,8 @@ rlJournalStart
         rlPhaseEnd
 
         rlPhaseStartTest "Check aide check after logrotate execution"
-            rlRun "aide --config=aide.conf --init" 
             rlRun "logrotate -f /etc/logrotate.conf"
-            rlRun "mv /var/aide-testing-dir/aide.db.new.gz /var/aide-testing-dir/aide.db.gz"
+            aideInit -c aide.conf
             rlRun -s "aide --config=aide.conf --check"
             rlAssertNotGrep "File: /var/log/wtmp" $rlRun_LOG
             rlRun "rm -rf /var/aide-testing-dir/aide.db.gz"
@@ -64,12 +64,12 @@ rlJournalStart
     else
 
         rlPhaseStartTest "Check issue after reboot and journalctl rotate"
+            rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
             pushd $AIDE_TEST_DIR
             rlRun "rm $COOKIE"
             rlRun "systemctl is-system-running --wait" 0-1 "Wait for system to fully boot"
-            rlRun "aide --config=aide.conf --init"
             rlRun "journalctl --rotate"
-            rlRun "mv /var/aide-testing-dir/aide.db.new.gz /var/aide-testing-dir/aide.db.gz"
+            aideInit -c aide.conf
             rlRun -s "aide --config=aide.conf --check"
             rlAssertNotGrep "/var/log/journal" $rlRun_LOG
         rlPhaseEnd
