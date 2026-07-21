@@ -39,7 +39,6 @@ rlJournalStart
 
   if [ ! -e $COOKIE ]; then
     rlPhaseStartSetup "pre-reboot phase"
-        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
         rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
         rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"

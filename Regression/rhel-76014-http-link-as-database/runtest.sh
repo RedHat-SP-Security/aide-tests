@@ -32,7 +32,6 @@ PACKAGE="aide"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         AIDE_TEST_DIR=/var/aide-testing-dir/
         rlRun "mkdir -p /var/aide-testing-dir"
         pushd $AIDE_TEST_DIR

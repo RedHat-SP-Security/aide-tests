@@ -34,7 +34,6 @@ PACKAGE="aide"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"

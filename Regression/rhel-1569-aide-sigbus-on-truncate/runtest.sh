@@ -37,7 +37,6 @@ AIDE_LOG="aide_output.log"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlLog "Setting up the test environment..."
         rlRun "mkdir -p $AIDE_TEST_DIR"
         pushd $AIDE_TEST_DIR
