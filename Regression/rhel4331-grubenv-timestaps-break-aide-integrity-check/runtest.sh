@@ -36,7 +36,7 @@ rlJournalStart
     rlPhaseStartSetup
         rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
-        rlRun "rlFileBackup --clean ${AIDE_CONF}"
+        aideBackupConfig
         if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
             rlRun "sed -i '\$aCONTENTEX = sha256+p+u+g+n+acl+selinux+xattrs' ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
         fi
@@ -55,7 +55,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun "rlFileRestore" 0 "Restore backuped files"
+        aideRestoreConfig
         rlRun "rm ${GRUB_SYMLINK_PATH}"
         #set boot_success flag to default value
         rlRun "grub2-editenv /boot/grub2/grubenv set boot_success=0"

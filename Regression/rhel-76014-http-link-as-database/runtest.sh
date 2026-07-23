@@ -32,6 +32,7 @@ PACKAGE="aide"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         AIDE_TEST_DIR=/var/aide-testing-dir/
         rlRun "mkdir -p /var/aide-testing-dir"
         pushd $AIDE_TEST_DIR
@@ -78,7 +79,7 @@ EOF
         rlLog "Using sed to adjust aide.conf to use URL: $HTTPS_URL"
         rlRun "sed -i 's/^database_in=.*/database_in=$HTTPS_URL/' aide.conf"
         rlLog "Running AIDE check against HTTPS URL..."
-        rlRun "aide --config=aide.conf --check" 0 "Verify AIDE does not crash with HTTPS database"
+        aideCheck -c aide.conf
     rlPhaseEnd
 
     rlPhaseStartCleanup
