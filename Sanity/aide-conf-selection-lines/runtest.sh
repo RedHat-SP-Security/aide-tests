@@ -32,41 +32,16 @@
 PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 
-DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-if rlIsRHELLike "=<9.7"; then
-  DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
-else
-  DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
-fi
-DB="${DBDIR}/${DB}"
-
-DBnew=$(grep "^database_out=" "$AIDE_CONF" | cut -d/ -f2-)
-DBnew="${DBDIR}/${DBnew}"
-
-aideInit() {
-    rlRun -s "aide -i" 0 "AIDE database initialization"
-    [ -f "$DBnew" ] || rlFail "New database is not initialized"
-    [ -n "$DB" ] || rlFail "Database path is not set correctly"
-
-    rlRun "mv ${DBnew} ${DB}" 0 "Move new AIDE initialed database to the place of the default one."
-    rlRun "rm $rlRun_LOG"
-}
-
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         AIDE_TEST_DIR="/var/aide-testing-dir"
         rlRun "mkdir -p $AIDE_TEST_DIR/"
         #rlRun "TmpDir=\$(mktemp -d --tmpdir=$AIDE_TEST_DIR/)" 0 "Creating tmp directory"
         rlRun "pushd $AIDE_TEST_DIR"
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
-        rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
-        rlRun "sed -i '/^$/d' ${AIDE_CONF}" 0 "Delete empty lines"
-
-        if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
-            rlRun "echo \"CONTENTEX = sha256+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
-        fi
-
+        aidePrepareConfig ${AIDE_CONF}
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
         rlRun "aide --config-check" 0 "No harm on changing config - cleaning config"
     rlPhaseEnd
@@ -79,7 +54,7 @@ rlJournalStart
         rlRun "tail -1 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding regular selection line"
         aideInit
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "touch myRoot/untrackedFile"
         rlRun "aide" 1 "Finding untracked file"
@@ -93,10 +68,10 @@ rlJournalStart
         rlRun "aide --config-check" 0 "No harm on changing config - adding negative selection line"
 
         aideInit
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "touch myRoot/dirNotCheck/fileNotToTrack"
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
     rlPhaseEnd
 
     rlPhaseStartTest "Checking selector '=' functionlity"
@@ -106,17 +81,17 @@ rlJournalStart
         rlRun "aide --config-check" 0 "No harm on changing config - adding equals selection line"
 
         aideInit
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "rlFileBackup --clean --namespace chmodChange dirCheckJustThis"
         rlRun "chmod 777 dirCheckJustThis" 0 "Make configuration change on tracked directory"
         rlRun "aide" 4 "Find changed file"
         rlRun "rlFileRestore --namespace chmodChange"
 
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
 
         rlRun "touch dirCheckJustThis/fileNotToTrack2"
-        rlRun "aide" 0 "All files match AIDE database"
+        aideCheck
     rlPhaseEnd
 
     rlPhaseStartCleanup

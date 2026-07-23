@@ -12,6 +12,7 @@ discover:
   - name: Upstream_tests_aide
     how: fmf
     tests:
+     - /Library
      - /Sanity
      - /Regression
     exclude:

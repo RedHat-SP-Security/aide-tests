@@ -40,6 +40,7 @@ AIDE_SECOND_CONF=aide_second.conf
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         if rlIsRHELLike "=<9.7"; then
             AIDE_FIRST_CONF=aide_rhel_9_first.conf
             AIDE_SECOND_CONF=aide_rhel_9_second.conf
@@ -54,9 +55,7 @@ rlJournalStart
         # Init the aide db twice with different config files
         # (will cause   aide --check   to log differences to log file)
         rlRun "cp $AIDE_FIRST_CONF $AIDE_CONFIG"
-        rlRun "aide --init"
-        rlAssertExists "/var/lib/aide/aide.db.new.gz"
-        rlRun "mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz"
+        aideInit
         rlRun "cp $AIDE_SECOND_CONF $AIDE_CONFIG"
         rlRun "aide --init"
     rlPhaseEnd

@@ -36,11 +36,10 @@ AIDE_DROPIN="/etc/aide.d/timer-test.conf"
 SERVICE_UNIT="aide-check.service"
 TIMER_UNIT="aide-check.timer"
 AIDE_TEST_DIR="/var/aide-timer-test-dir"
-DB="/var/lib/aide/aide.db.gz"
-DBnew="/var/lib/aide/aide.db.new.gz"
 
 rlJournalStart && {
   rlPhaseStartSetup && {
+    rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
     rlAssertRpm $PACKAGE
     rlRun "mkdir -p /var/lib/aide"
     rlRun "rlFileBackup --clean /var/lib/aide"
@@ -51,8 +50,7 @@ rlJournalStart && {
     rlRun "echo '$AIDE_TEST_DIR/ p+i+n+u+g+s+sha256' > ${AIDE_DROPIN}" 0 \
       "Drop test watch rule into /etc/aide.d"
     rlRun "aide --config-check" 0 "Config must be valid with drop-in present"
-    rlRun "aide --init" 0 "Initialize aide database"
-    rlRun "mv ${DBnew} ${DB}" 0 "Promote database"
+    aideInit
   rlPhaseEnd; }
 
   rlPhaseStartTest "Unit files are shipped" && {

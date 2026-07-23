@@ -37,6 +37,7 @@ LEGACY_CONF="legacy-aide.conf"
 rlJournalStart
 
     rlPhaseStartSetup "Prepare test environment"
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "which aide-migrate-config" 0 "aide-migrate-config must be available"
         rlRun "mkdir -p $TEST_DIR/{data,db,log}"
@@ -174,10 +175,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "aide --init succeeds with migrated config"
-        rlRun "aide --init -c $TEST_DIR/aide.conf" 0 \
-            "aide --init must succeed with migrated config"
-        rlAssertExists "$TEST_DIR/db/aide.db.new.gz"
-        rlRun "mv $TEST_DIR/db/aide.db.new.gz $TEST_DIR/db/aide.db.gz"
+        aideInit -c $TEST_DIR/aide.conf
     rlPhaseEnd
 
     rlPhaseStartTest "aide --check succeeds with migrated config"

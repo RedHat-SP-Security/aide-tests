@@ -35,9 +35,8 @@ AIDE_CONFIG=aide.conf
 
 rlJournalStart
     rlPhaseStartSetup
-        if rlIsRHELLike "=<9.7"; then
-            AIDE_CONFIG=aide_rhel_9.conf
-        fi
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
+        AIDE_CONFIG=$(aideGetRhelConfig aide.conf)
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
@@ -47,8 +46,7 @@ rlJournalStart
         rlRun "echo blah > data/testFile" 0 "Make test file"
         rlRun "echo blah > data/permSizeCheck/testFile" 0 "Make test file"
 
-        rlRun "aide -i -c $TmpDir/$AIDE_CONFIG" 0 "Init database again"
-        rlRun "cp -p db/aide.db.out.gz db/aide.db.gz" 0 "Copy database to the read database"
+        aideInit -c $TmpDir/$AIDE_CONFIG
     rlPhaseEnd
 
     rlPhaseStartTest "Checking aide groups"

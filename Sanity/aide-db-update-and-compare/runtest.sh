@@ -37,9 +37,8 @@ AIDE_CONFIG=aide.conf
 
 rlJournalStart
     rlPhaseStartSetup
-        if rlIsRHELLike "=<9.7"; then
-            AIDE_CONFIG=aide_rhel_9.conf
-        fi
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
+        AIDE_CONFIG=$(aideGetRhelConfig aide.conf)
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"

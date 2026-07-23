@@ -32,29 +32,11 @@ PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 GRUB_SYMLINK_PATH="/etc/systemd/system/grub-boot-success.service"
 
-DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-DB="${DBDIR}/aide.db.gz"
-DBnew="${DBDIR}/aide.db.new.gz"
-
-aideInit() {
-    rlRun -s "aide -i" 0 "AIDE database initialization"
-    [ -f "$DBnew" ] || rlFail "New database is not initialized"
-    [ -n "$DB" ] || rlFail "Database path is not set correctly"
-    rlRun "mv ${DBnew} ${DB}" 0 "Move new AIDE initialed database to the place of the default one."
-    rlRun "rm $rlRun_LOG"
-}
-
-aideCheck() {
-    rlRun -s "aide" 0 "Checking default behaviour -- database check"
-    rlAssertGrep "Looks okay!" $rlRun_LOG
-    rlRun "rm $rlRun_LOG"
-}
-
 rlJournalStart
     rlPhaseStartSetup
-        rlRun "rlImport --all" 0 "Import libraries" || rlDie "cannot continue"
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
-        rlRun "rlFileBackup --clean ${AIDE_CONF}"
+        aideBackupConfig
         if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
             rlRun "sed -i '\$aCONTENTEX = sha256+p+u+g+n+acl+selinux+xattrs' ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
         fi
@@ -73,7 +55,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun "rlFileRestore" 0 "Restore backuped files"
+        aideRestoreConfig
         rlRun "rm ${GRUB_SYMLINK_PATH}"
         #set boot_success flag to default value
         rlRun "grub2-editenv /boot/grub2/grubenv set boot_success=0"
