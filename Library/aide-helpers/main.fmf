@@ -8,8 +8,4 @@ require:
  - aide
 duration: 5m
 enabled: true
-adjust:
--   enabled: false
-    when: distro == rhel-4, rhel-5, rhel-6, rhel-7
-    continue: false
 id: 1503e42b-650a-4408-b6ca-bc9ffbf1cf50
