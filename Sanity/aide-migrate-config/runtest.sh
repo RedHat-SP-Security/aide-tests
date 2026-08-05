@@ -179,8 +179,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "aide --check succeeds with migrated config"
-        rlRun "aide --check -c $TEST_DIR/aide.conf" 0 \
-            "aide --check must succeed with migrated config and fresh database"
+        aideCheck -c $TEST_DIR/aide.conf
     rlPhaseEnd
 
     rlPhaseStartTest "Migration is idempotent"
