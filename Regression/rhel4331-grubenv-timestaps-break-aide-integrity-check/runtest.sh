@@ -48,10 +48,10 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Check that grubenv parameter change doesnt break aide integrity check."
-        rlRun "aideCheck"
+        rlRun "aideCheck" 0
         rlRun "systemctl start grub-boot-success.service"
         #rlRun "sleep 120"
-        rlRun "aideCheck"
+        rlRun "aideCheck" 0
     rlPhaseEnd
 
     rlPhaseStartCleanup

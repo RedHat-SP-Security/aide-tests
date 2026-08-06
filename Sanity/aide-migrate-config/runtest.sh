@@ -179,7 +179,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "aide --check succeeds with migrated config"
-        aideCheck -c $TEST_DIR/aide.conf
+        rlRun "aideCheck -c $TEST_DIR/aide.conf" 0
     rlPhaseEnd
 
     rlPhaseStartTest "Migration is idempotent"

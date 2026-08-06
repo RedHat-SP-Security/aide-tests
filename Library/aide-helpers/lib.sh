@@ -152,7 +152,7 @@ Returns 0 when the check was successful.
 aideCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
     [ "$1" == "-c" ] && CONF="$2"
-    rlRun "aide --check -c $CONF" 0 "Checking default behaviour -- database check"
+    aide --check -c $CONF
 }
 
 

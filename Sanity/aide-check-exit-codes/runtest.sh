@@ -49,7 +49,7 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 1 (new files detected)"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
         rlRun -s "aide" 1 "Recheck consistency between database and filesystem"
@@ -58,13 +58,13 @@ rlJournalStart
         rlRun "rm $rlRun_LOG"
 
         rlRun "rm ${testingFile}"
-        aideCheck
+        rlRun "aideCheck" 0
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 2 (removed files detected)"
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "rm ${testingFile}"
         rlRun -s "aide" 2 "Recheck consistency -- one file is missing"
@@ -76,7 +76,7 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 4 (changed files detected)"
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "echo 'test data' > ${testingFile}" 0 "Overwriting testing file"
         rlRun -s "aide" 4 "Recheck consistency -- one file is changed"
@@ -85,7 +85,7 @@ rlJournalStart
         rlRun "rm $rlRun_LOG"
 
         rlRun "> ${testingFile}" 0 "Clearing testing file"
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "rm ${testingFile}"
     rlPhaseEnd
@@ -94,7 +94,7 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 3 (added + removed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
@@ -108,7 +108,7 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 5 (added + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
         rlRun "echo 'test data' > ${testingFileA}" 0 "Modify file A - was in database"
@@ -123,7 +123,7 @@ rlJournalStart
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
         rlRun "echo 'test data' > ${testingFileB}" 0 "Modify file B - was in database"
@@ -138,7 +138,7 @@ rlJournalStart
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
         aideInit
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "testingFileC=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file C - will be new since last init"
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"

@@ -79,7 +79,7 @@ EOF
         rlLog "Using sed to adjust aide.conf to use URL: $HTTPS_URL"
         rlRun "sed -i 's/^database_in=.*/database_in=$HTTPS_URL/' aide.conf"
         rlLog "Running AIDE check against HTTPS URL..."
-        aideCheck -c aide.conf
+        rlRun "aideCheck -c aide.conf" 0
     rlPhaseEnd
 
     rlPhaseStartCleanup
