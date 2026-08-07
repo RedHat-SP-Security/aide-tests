@@ -1,7 +1,7 @@
 summary: aide-helpers
 description: Beakerlib library implementing various aide related functions that should simplify test implementation.
 contact: Marek Safarik <msafarik@redhat.com>
-component: []
+component: aide
 test: ./runtest.sh
 framework: beakerlib
 require:
