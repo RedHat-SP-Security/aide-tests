@@ -175,7 +175,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "aide --init succeeds with migrated config"
-        aideInit -c $TEST_DIR/aide.conf
+        rlRun "aideInit -c $TEST_DIR/aide.conf" 0 "AIDE database initialization"
     rlPhaseEnd
 
     rlPhaseStartTest "aide --check succeeds with migrated config"

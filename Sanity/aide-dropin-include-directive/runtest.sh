@@ -66,7 +66,7 @@ rlJournalStart && {
     rlRun "echo '$WATCH_DIR p+i+n+u+g+s+sha256' > $DROPIN_CONF"
     rlRun "aide --config-check" 0 \
       "Config must be valid with the drop-in present"
-    aideInit
+    rlRun "aideInit" 0 "AIDE database initialization"
     rlRun "echo 'modified content' > $WATCH_DIR/testfile"
     rlRun -s "aide --check" 4 \
       "aide must detect changes in the drop-in monitored directory"

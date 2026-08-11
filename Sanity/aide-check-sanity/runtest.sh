@@ -75,7 +75,7 @@ rlJournalStart && {
       rlRun "echo 'y' > $AIDE_TEST_DIR/data/file2"
       rlRun "echo 'z' > $AIDE_TEST_DIR/data/file3"
       rlRun "chmod a=rw $AIDE_TEST_DIR/data/*"
-      aideInit -c $AIDE_TEST_DIR/aide.conf
+      rlRun "aideInit -c $AIDE_TEST_DIR/aide.conf" 0 "AIDE database initialization"
       rlRun "echo 'A' > $AIDE_TEST_DIR/data/file4"
       rlRun "rm -f $AIDE_TEST_DIR/data/file1"
       rlRun "echo 'B' > $AIDE_TEST_DIR/data/file2"

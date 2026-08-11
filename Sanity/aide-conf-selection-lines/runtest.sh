@@ -41,7 +41,7 @@ rlJournalStart
         #rlRun "TmpDir=\$(mktemp -d --tmpdir=$AIDE_TEST_DIR/)" 0 "Creating tmp directory"
         rlRun "pushd $AIDE_TEST_DIR"
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
-        aidePrepareConfig ${AIDE_CONF}
+        rlRun "aidePrepareConfig ${AIDE_CONF}" 0 "Prepare aide config for testing"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
         rlRun "aide --config-check" 0 "No harm on changing config - cleaning config"
     rlPhaseEnd
@@ -53,7 +53,7 @@ rlJournalStart
         rlRun "echo \"${AIDE_TEST_DIR}/myRoot/ CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding regular selection line"
         rlRun "tail -1 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding regular selection line"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "touch myRoot/untrackedFile"
@@ -67,7 +67,7 @@ rlJournalStart
         rlRun "tail -2 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding negative selection line"
 
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "touch myRoot/dirNotCheck/fileNotToTrack"
@@ -80,7 +80,7 @@ rlJournalStart
         rlRun "tail -3 ${AIDE_CONF}" 0 "Listing AIDE config"
         rlRun "aide --config-check" 0 "No harm on changing config - adding equals selection line"
 
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "rlFileBackup --clean --namespace chmodChange dirCheckJustThis"

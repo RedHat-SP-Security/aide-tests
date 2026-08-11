@@ -46,7 +46,7 @@ rlJournalStart
         rlRun "echo blah > data/testFile" 0 "Make test file"
         rlRun "echo blah > data/permSizeCheck/testFile" 0 "Make test file"
 
-        aideInit -c $TmpDir/$AIDE_CONFIG
+        rlRun "aideInit -c $TmpDir/$AIDE_CONFIG" 0 "AIDE database initialization"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking aide groups"

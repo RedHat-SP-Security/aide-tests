@@ -39,7 +39,7 @@ rlJournalStart
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
-        aidePrepareConfig ${AIDE_CONF}
+        rlRun "aidePrepareConfig ${AIDE_CONF}" 0 "Prepare aide config for testing"
         AIDE_TEST_DIR="/var/aide-testing-dir"
         rlRun "mkdir -p $AIDE_TEST_DIR"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
@@ -48,7 +48,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 1 (new files detected)"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
@@ -63,7 +63,7 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 2 (removed files detected)"
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "rm ${testingFile}"
@@ -75,7 +75,7 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 4 (changed files detected)"
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "echo 'test data' > ${testingFile}" 0 "Overwriting testing file"
@@ -93,7 +93,7 @@ rlJournalStart
     if ! rlIsFedora || rlIsFedora ">=45"; then
     rlPhaseStartTest "Checking exit code 3 (added + removed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
@@ -107,7 +107,7 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 5 (added + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
@@ -122,7 +122,7 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 6 (removed + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
@@ -137,7 +137,7 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 7 (added + removed + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "testingFileC=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file C - will be new since last init"
@@ -162,7 +162,7 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 18 (IO error)"
         rlRun "rm ${DB}" 0 "Removing AIDE datbase for testing purpose"
         rlRun "aide" 18
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
     rlPhaseEnd
 
     rlPhaseStartCleanup

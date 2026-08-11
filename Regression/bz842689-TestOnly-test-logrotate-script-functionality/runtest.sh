@@ -55,7 +55,7 @@ rlJournalStart
         # Init the aide db twice with different config files
         # (will cause   aide --check   to log differences to log file)
         rlRun "cp $AIDE_FIRST_CONF $AIDE_CONFIG"
-        aideInit
+        rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "cp $AIDE_SECOND_CONF $AIDE_CONFIG"
         rlRun "aide --init"
     rlPhaseEnd

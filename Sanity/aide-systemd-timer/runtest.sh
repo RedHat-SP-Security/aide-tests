@@ -50,7 +50,7 @@ rlJournalStart && {
     rlRun "echo '$AIDE_TEST_DIR/ p+i+n+u+g+s+sha256' > ${AIDE_DROPIN}" 0 \
       "Drop test watch rule into /etc/aide.d"
     rlRun "aide --config-check" 0 "Config must be valid with drop-in present"
-    aideInit
+    rlRun "aideInit" 0 "AIDE database initialization"
   rlPhaseEnd; }
 
   rlPhaseStartTest "Unit files are shipped" && {

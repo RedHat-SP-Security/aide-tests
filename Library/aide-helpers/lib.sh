@@ -83,6 +83,7 @@ Returns 0.
 
 aideGetDbPaths() {
     local CONF="${1:-$__INTERNAL_aideConfDefault}"
+    [ -f "$CONF" ] || { rlLogError "Config file '$CONF' not found"; return 1; }
     DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$CONF")
     if rlIsRHELLike "=<9.7"; then
         DB=$(grep "^database=" "$CONF" | cut -d/ -f2-)
@@ -92,6 +93,7 @@ aideGetDbPaths() {
     DB="${DBDIR}/${DB}"
     DBnew=$(grep "^database_out=" "$CONF" | cut -d/ -f2-)
     DBnew="${DBDIR}/${DBnew}"
+    return 0
 }
 
 
@@ -119,12 +121,13 @@ Returns 0 when the initialization was successful.
 aideInit() {
     local CONF="$__INTERNAL_aideConfDefault"
     [ "$1" == "-c" ] && CONF="$2"
-    aideGetDbPaths "$CONF"
-    rlRun -s "aide -i -c $CONF" 0 "AIDE database initialization"
-    [ -f "$DBnew" ] || rlFail "New database is not initialized"
-    [ -n "$DB" ] || rlFail "Database path is not set correctly"
-    rlRun "mv ${DBnew} ${DB}" 0 "Move new AIDE initialed database to the place of the default one."
-    rlRun "rm $rlRun_LOG"
+    aideGetDbPaths "$CONF" || return 1
+    rlLogInfo "AIDE database initialization with config $CONF"
+    aide -i -c "$CONF" || { rlLogError "AIDE database initialization failed"; return 1; }
+    [ -f "$DBnew" ] || { rlLogError "New database is not initialized"; return 1; }
+    [ -n "$DB" ] || { rlLogError "Database path is not set correctly"; return 1; }
+    mv "${DBnew}" "${DB}" || { rlLogError "Failed to move new database to ${DB}"; return 1; }
+    return 0
 }
 
 
@@ -152,7 +155,7 @@ Returns 0 when the check was successful.
 aideCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
     [ "$1" == "-c" ] && CONF="$2"
-    aide --check -c $CONF
+    aide --check -c "$CONF"
 }
 
 
@@ -178,7 +181,8 @@ Returns 0 when the backup was successful.
 =cut
 
 aideBackupConfig() {
-    rlFileBackup --clean --namespace aideConf /etc/aide.conf /etc/aide.d
+    rlFileBackup --clean --namespace aideConf /etc/aide.conf /etc/aide.d || return 1
+    return 0
 }
 
 
@@ -200,7 +204,8 @@ Returns 0 when the restore was successful.
 =cut
 
 aideRestoreConfig() {
-    rlFileRestore --namespace aideConf
+    rlFileRestore --namespace aideConf || return 1
+    return 0
 }
 
 
@@ -235,6 +240,7 @@ aideGetRhelConfig() {
     else
         echo "$BASE"
     fi
+    return 0
 }
 
 
@@ -267,11 +273,14 @@ Returns 0.
 
 aidePrepareConfig() {
     local CONF="${1:-$__INTERNAL_aideConfDefault}"
-    rlRun "sed -i '/^[/!#]/d' $CONF" 0 "Delete all paths and comments in aide config"
-    rlRun "sed -i '/^$/d' $CONF" 0 "Delete empty lines"
+    [ -f "$CONF" ] || { rlLogError "Config file '$CONF' not found"; return 1; }
+    rlLogInfo "Preparing aide config $CONF"
+    sed -i '/^[/!#]/d' "$CONF" || return 1
+    sed -i '/^$/d' "$CONF" || return 1
     if ! grep -q -e 'CONTENTEX' "$CONF"; then
-        rlRun "echo 'CONTENTEX = sha256+ftype+p+u+g+n+acl+selinux+xattrs' >> $CONF" 0 "Adding CONTENTEX group"
+        echo 'CONTENTEX = sha256+ftype+p+u+g+n+acl+selinux+xattrs' >> "$CONF" || return 1
     fi
+    return 0
 }
 
 

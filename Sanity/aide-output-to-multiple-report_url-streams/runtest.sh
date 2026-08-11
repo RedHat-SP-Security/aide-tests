@@ -55,7 +55,7 @@ rlJournalStart
 	rlRun "echo hello > $TmpDir/data/to_be_modified"
 	rlRun "touch $TmpDir/data/to_be_removed"
 	# initialize aide
-	aideInit -c $TmpDir/aide.conf
+	rlRun "aideInit -c $TmpDir/aide.conf" 0 "AIDE database initialization"
 	# modify data
 	rlRun "echo bye > $TmpDir/data/to_be_modified"
 	rlRun "rm $TmpDir/data/to_be_removed"

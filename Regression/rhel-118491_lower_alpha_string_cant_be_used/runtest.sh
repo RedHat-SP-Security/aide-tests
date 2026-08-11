@@ -50,7 +50,7 @@ rlJournalStart
         rlPhaseEnd
 
         rlPhaseStartTest "Check issue after reboot and journalctl rotate"
-            aideInit -c aide.conf
+            rlRun "aideInit -c aide.conf" 0 "AIDE database initialization"
             rlRun -s "aide --config=aide.conf --check" 1-255 "Check AIDE database, should fail"
         rlPhaseEnd
 

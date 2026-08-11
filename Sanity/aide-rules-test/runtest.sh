@@ -58,7 +58,7 @@ rlJournalStart
 	chcon -t etc_t $TmpDir/aide.conf
 	chcon -t aide_log_t $TmpDir/log
 
-	aideInit -c $TmpDir/aide.conf
+	rlRun "aideInit -c $TmpDir/aide.conf" 0 "AIDE database initialization"
 
 	sleep 60  # some time delay because of timestamp related tests
 	rlRun "./update_files.sh $TmpDir" 0 "Updating test files"
