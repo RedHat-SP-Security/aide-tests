@@ -83,8 +83,7 @@ rlJournalStart
         fi
         rm -f $rlRun_LOG
         rlRun "bootc switch --transport containers-storage localhost/test"
-        # aide called directly - init and mv are split by tmt-reboot
-        rlRun "aide -i -c $AIDE_TEST_DIR/aide.conf"
+        rlRun "aideInit --no-mv -c $AIDE_TEST_DIR/aide.conf" 0
         rlRun "touch $COOKIE"
     rlPhaseEnd
 

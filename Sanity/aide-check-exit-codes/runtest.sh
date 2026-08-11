@@ -152,8 +152,7 @@ rlJournalStart
     fi
 
     rlPhaseStartTest "Checking exit code 15 (Invalid argument error)"
-        # aide called directly - testing invalid argument exit code
-        rlRun "aide blahblah" 15
+        rlRun "aideRun blahblah" 15
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 16 (Unimplemented function error)"

@@ -65,8 +65,8 @@ rlJournalStart
 	SYSLOG_LENGTH=$( cat /var/log/messages | wc -l)
         [ $SYSLOG_LENGTH == 0 ] && SYSLOG_LENGTH=1 
 	rlRun "exec 5>$TmpDir/fd5" 0 "Attach file descriptor 5 to $TmpDir/fd5"
-	# aide called directly - compound command with output redirections
-	rlRun "rm -f $AIDE_LOG && aide -c $TmpDir/aide.conf > $TmpDir/stdout 2> $TmpDir/stderr" 7 "Run aide verification"
+	rlRun "rm -f $AIDE_LOG" 0 "Remove old log file"
+	rlRun "aideCheck -c $TmpDir/aide.conf > $TmpDir/stdout 2> $TmpDir/stderr" 7 "Run aide verification"
 	sleep 2
 	rlRun "sed -n '$SYSLOG_LENGTH,\$ p' /var/log/messages > $TmpDir/syslog" 0 "Extracting the new syslog content"
     rlPhaseEnd

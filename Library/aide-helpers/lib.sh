@@ -121,18 +121,24 @@ Returns 0 when the initialization was successful.
 aideInit() {
     local CONF="$__INTERNAL_aideConfDefault"
     local NO_MV=false
+    local RUN_USER=""
     local AIDE_OPTS=""
 
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
             --no-mv) NO_MV=true; shift;;
+            --user) RUN_USER="$2"; shift 2;;
             *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
         esac
     done
 
     aideGetDbPaths "$CONF" || return 1
-    aide -i -c "$CONF" $AIDE_OPTS || return $?
+    if [ -n "$RUN_USER" ]; then
+        su -c "aide -i -c '$CONF' $AIDE_OPTS" - "$RUN_USER" || return $?
+    else
+        aide -i -c "$CONF" $AIDE_OPTS || return $?
+    fi
 
     if ! $NO_MV; then
         [ -f "$DBnew" ] || { rlLogError "New database is not initialized"; return 1; }
@@ -166,8 +172,20 @@ Returns 0 when the check was successful.
 
 aideCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
-    [ "$1" == "-c" ] && CONF="$2"
-    aide --check -c "$CONF"
+    local RUN_USER=""
+    local AIDE_OPTS=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -c) CONF="$2"; shift 2;;
+            --user) RUN_USER="$2"; shift 2;;
+            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+        esac
+    done
+    if [ -n "$RUN_USER" ]; then
+        su -c "aide --check -c '$CONF' $AIDE_OPTS" - "$RUN_USER"
+    else
+        aide --check -c "$CONF" $AIDE_OPTS
+    fi
 }
 
 
@@ -194,8 +212,14 @@ Returns aide exit code.
 
 aideConfigCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
-    [ "$1" == "-c" ] && CONF="$2"
-    aide --config-check -c "$CONF"
+    local AIDE_OPTS=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -c) CONF="$2"; shift 2;;
+            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+        esac
+    done
+    aide --config-check -c "$CONF" $AIDE_OPTS
 }
 
 
@@ -222,8 +246,20 @@ Returns aide exit code.
 
 aideUpdate() {
     local CONF="$__INTERNAL_aideConfDefault"
-    [ "$1" == "-c" ] && CONF="$2"
-    aide --update -c "$CONF"
+    local RUN_USER=""
+    local AIDE_OPTS=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -c) CONF="$2"; shift 2;;
+            --user) RUN_USER="$2"; shift 2;;
+            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+        esac
+    done
+    if [ -n "$RUN_USER" ]; then
+        su -c "aide --update -c '$CONF' $AIDE_OPTS" - "$RUN_USER"
+    else
+        aide --update -c "$CONF" $AIDE_OPTS
+    fi
 }
 
 
@@ -250,8 +286,41 @@ Returns aide exit code.
 
 aideCompare() {
     local CONF="$__INTERNAL_aideConfDefault"
-    [ "$1" == "-c" ] && CONF="$2"
-    aide --compare -c "$CONF"
+    local AIDE_OPTS=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -c) CONF="$2"; shift 2;;
+            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+        esac
+    done
+    aide --compare -c "$CONF" $AIDE_OPTS
+}
+
+
+true <<'=cut'
+=pod
+
+=head2 aideRun
+
+Run aide with arbitrary arguments. Use for edge cases where
+other library functions do not apply.
+
+    aideRun [ARGS...]
+
+=over
+
+=item ARGS
+
+Any arguments to pass directly to aide.
+
+=back
+
+Returns aide exit code.
+
+=cut
+
+aideRun() {
+    aide "$@"
 }
 
 
