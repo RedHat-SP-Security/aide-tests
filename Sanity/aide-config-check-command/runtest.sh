@@ -34,6 +34,7 @@ PACKAGE="aide"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
@@ -41,14 +42,12 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking the default /etc/aide.conf should succeed"
-        # aide called directly - config-check is a different command
-        rlRun "aide -D"
-        rlRun "aide --config-check"
+        rlRun "aideConfigCheck"
+        rlRun "aideConfigCheck"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking the faulty configuration file"
-        # aide called directly - config-check is a different command
-        rlRun -s "aide -D -c $TmpDir/aide.conf" 17
+        rlRun -s "aideConfigCheck -c $TmpDir/aide.conf" 17
         rlRun "cat $rlRun_LOG"
         if rlIsRHELLike "<9.8" ; then
           rlAssertGrep "2:syntax error" $rlRun_LOG
@@ -62,8 +61,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Passing non-existing filepath"
-        # aide called directly - config-check is a different command
-        rlRun -s "aide -D -c /nosuchfile" 17,18
+        rlRun -s "aideConfigCheck -c /nosuchfile" 17,18
         rlRun "cat $rlRun_LOG"
 	      if rlIsRHELLike "<9.8"; then
           rlAssertGrep "Cannot access config file: ?/nosuchfile: ?No such file or directory" $rlRun_LOG -E

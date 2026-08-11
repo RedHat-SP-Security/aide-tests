@@ -50,8 +50,7 @@ rlJournalStart && {
                     rlRun "cat /var/log/aide/aide-migrate.log" 0 \
                         "Show automatic migration log from %post"
                 fi
-                # aide called directly - config-check is a different command
-                rlRun "aide --config-check -c /etc/aide.conf" 0 \
+                rlRun "aideConfigCheck -c /etc/aide.conf" 0 \
                     "Default config must be valid after package upgrade"
             fi
             rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"

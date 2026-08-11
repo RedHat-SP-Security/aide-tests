@@ -63,8 +63,7 @@ rlJournalStart
 	sleep 60  # some time delay because of timestamp related tests
 	rlRun "./update_files.sh $TmpDir" 0 "Updating test files"
 	export AIDE_LOG="$TmpDir/log/aide.log"
-	# aide called directly - update is a different command
-	rlRun "aide -u -c $TmpDir/aide.conf" 7 "Re-run aide test"
+	rlRun "aideUpdate -c $TmpDir/aide.conf" 7 "Re-run aide test"
 
     rlPhaseEnd
 

@@ -44,8 +44,7 @@ rlJournalStart
         rlRun "mkdir -p $AIDE_TEST_DIR"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
         rlRun "echo '$AIDE_TEST_DIR/ CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
-        # aide called directly - config-check is a different command
-        rlRun "aide --config-check" 0 "No harm on changing config"
+        rlRun "aideConfigCheck" 0 "No harm on changing config"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 1 (new files detected)"

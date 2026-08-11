@@ -171,6 +171,90 @@ aideCheck() {
 }
 
 
+true <<'=cut'
+=pod
+
+=head2 aideConfigCheck
+
+Run aide configuration check.
+
+    aideConfigCheck [-c AIDE_CONF]
+
+=over
+
+=item -c AIDE_CONF
+
+Path to aide configuration file (/etc/aide.conf by default).
+
+=back
+
+Returns aide exit code.
+
+=cut
+
+aideConfigCheck() {
+    local CONF="$__INTERNAL_aideConfDefault"
+    [ "$1" == "-c" ] && CONF="$2"
+    aide --config-check -c "$CONF"
+}
+
+
+true <<'=cut'
+=pod
+
+=head2 aideUpdate
+
+Run aide database update.
+
+    aideUpdate [-c AIDE_CONF]
+
+=over
+
+=item -c AIDE_CONF
+
+Path to aide configuration file (/etc/aide.conf by default).
+
+=back
+
+Returns aide exit code.
+
+=cut
+
+aideUpdate() {
+    local CONF="$__INTERNAL_aideConfDefault"
+    [ "$1" == "-c" ] && CONF="$2"
+    aide --update -c "$CONF"
+}
+
+
+true <<'=cut'
+=pod
+
+=head2 aideCompare
+
+Run aide database compare.
+
+    aideCompare [-c AIDE_CONF]
+
+=over
+
+=item -c AIDE_CONF
+
+Path to aide configuration file (/etc/aide.conf by default).
+
+=back
+
+Returns aide exit code.
+
+=cut
+
+aideCompare() {
+    local CONF="$__INTERNAL_aideConfDefault"
+    [ "$1" == "-c" ] && CONF="$2"
+    aide --compare -c "$CONF"
+}
+
+
 # ~~~~~~~~~~~~~~~~~~~~
 #   Config management
 # ~~~~~~~~~~~~~~~~~~~~
