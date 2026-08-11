@@ -35,7 +35,8 @@ TEST_DIR="/var/aide-testing-dir"
 AIDE_CONFIG="/etc/aide.conf"
 
 function checkUpdateAide {
-    rlRun "aideUpdate --user $testUser -c $TEST_DIR/aide.conf" $1 "Updating AIDE database as $testUser"
+    # aide called directly - function not available in su context
+    rlRun "su -c 'aide --update -c $TEST_DIR/aide.conf' - $testUser" $1 "Updating AIDE database as $testUser"
     rlRun "mv -f $TEST_DIR/db/aide.db.new.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
 }
 
@@ -62,7 +63,8 @@ rlJournalStart
         exe2="${TEST_DIR}/data/exe2"
         rlRun "sed -i '/# Next decide what directories\/files you want in the database/q'  $TEST_DIR/aide.conf"
         rlRun 'echo "/var/aide-testing-dir/data   p+u+g+sha256" >> $TEST_DIR/aide.conf' 0 "Adding watched directory"
-        rlRun "aideInit --no-mv --user $testUser -c $TEST_DIR/aide.conf" 0 "Initializing AIDE database as $testUser"
+        # aide called directly - function not available in su context
+        rlRun "su -c 'aide -i -c $TEST_DIR/aide.conf' - $testUser" 0 "Initializing AIDE database as $testUser"
         rlRun "mv -f $TEST_DIR/db/aide.db.new.gz $TEST_DIR/db/aide.db.gz" 0 "Moving database with new data"
     rlPhaseEnd
 
@@ -82,7 +84,8 @@ rlJournalStart
         rlRun "mv $TEST_DIR/random.txt $TEST_DIR/data/random.txt"
         rlRun "chmod a=rwx $TEST_DIR/data/random.txt" 0 "Adding permissions for random.txt"
         rlRun "echo 'Different text' > $TEST_DIR/data/random.txt"
-        rlRun "aideCheck --user $testUser -c $TEST_DIR/aide.conf" 4 "Checking changes"
+        # aide called directly - function not available in su context
+        rlRun "su -c 'aide --check -c $TEST_DIR/aide.conf' - $testUser" 4 "Checking changes"
         rlRun "echo 'Random text' > $TEST_DIR/data/random.txt"
         rlRun "chmod a=r $TEST_DIR/data/random.txt" 0 "Reverting permissions for random.txt"
         checkUpdateAide 0

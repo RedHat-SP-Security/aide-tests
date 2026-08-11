@@ -55,7 +55,8 @@ rlJournalStart
 
     rlPhaseStartTest "AIDE should handle file truncation gracefully"
         rlLog "Starting 'aide --init' in the background..."
-        aideInit --no-mv -c "$AIDE_CONF" &> $AIDE_LOG 2>&1 &
+        # aide called directly - runs in background, function not available in subshell
+        aide --config=$AIDE_CONF --init &> $AIDE_LOG 2>&1 &
         AIDE_PID=$!
         rlLog "AIDE process started with PID: $AIDE_PID"
         # race condition

@@ -121,24 +121,18 @@ Returns 0 when the initialization was successful.
 aideInit() {
     local CONF="$__INTERNAL_aideConfDefault"
     local NO_MV=false
-    local RUN_USER=""
     local AIDE_OPTS=""
 
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
             --no-mv) NO_MV=true; shift;;
-            --user) RUN_USER="$2"; shift 2;;
             *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
         esac
     done
 
     aideGetDbPaths "$CONF" || return 1
-    if [ -n "$RUN_USER" ]; then
-        su -c "aide -i -c '$CONF' $AIDE_OPTS" - "$RUN_USER" || return $?
-    else
-        aide -i -c "$CONF" $AIDE_OPTS || return $?
-    fi
+    aide -i -c "$CONF" $AIDE_OPTS || return $?
 
     if ! $NO_MV; then
         [ -f "$DBnew" ] || { rlLogError "New database is not initialized"; return 1; }
@@ -172,20 +166,14 @@ Returns 0 when the check was successful.
 
 aideCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
-    local RUN_USER=""
     local AIDE_OPTS=""
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
-            --user) RUN_USER="$2"; shift 2;;
             *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
         esac
     done
-    if [ -n "$RUN_USER" ]; then
-        su -c "aide --check -c '$CONF' $AIDE_OPTS" - "$RUN_USER"
-    else
-        aide --check -c "$CONF" $AIDE_OPTS
-    fi
+    aide --check -c "$CONF" $AIDE_OPTS
 }
 
 
@@ -246,20 +234,14 @@ Returns aide exit code.
 
 aideUpdate() {
     local CONF="$__INTERNAL_aideConfDefault"
-    local RUN_USER=""
     local AIDE_OPTS=""
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
-            --user) RUN_USER="$2"; shift 2;;
             *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
         esac
     done
-    if [ -n "$RUN_USER" ]; then
-        su -c "aide --update -c '$CONF' $AIDE_OPTS" - "$RUN_USER"
-    else
-        aide --update -c "$CONF" $AIDE_OPTS
-    fi
+    aide --update -c "$CONF" $AIDE_OPTS
 }
 
 
