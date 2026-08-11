@@ -60,12 +60,13 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "aide --config-check fails with legacy config"
+        # aide called directly - config-check is a different command
         rlRun -s "aide --config-check -c $TEST_DIR/aide.conf" 17 \
             "Legacy 0.16 config must fail config-check on aide 0.19+"
     rlPhaseEnd
 
     rlPhaseStartTest "aide --init fails with legacy config"
-        rlRun "aide --init -c $TEST_DIR/aide.conf" 17 \
+        rlRun "aideInit --no-mv -c $TEST_DIR/aide.conf" 17 \
             "Legacy 0.16 config must fail init on aide 0.19+"
     rlPhaseEnd
 
@@ -170,6 +171,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Verify config-check passes after migration"
+        # aide called directly - config-check is a different command
         rlRun "aide --config-check -c $TEST_DIR/aide.conf" 0 \
             "Migrated config must pass config-check"
     rlPhaseEnd

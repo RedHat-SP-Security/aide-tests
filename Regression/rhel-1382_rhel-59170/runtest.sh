@@ -30,6 +30,7 @@
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         AIDE_TEST_DIR=/var/aide-testing-dir/
         rlRun "mkdir -p /var/aide-testing-dir"
         pushd $AIDE_TEST_DIR
@@ -44,7 +45,7 @@ rlJournalStart
 
     rlPhaseStartTest "Check aide --init correctly measure files and not containing any warnings"
         rlLog "Initializing AIDE database locally..."
-        rlRun -s "aide --config=aide.conf --init" 0 "AIDE initialization"
+        rlRun -s "aideInit --no-mv -c aide.conf" 0 "AIDE initialization"
         if rlIsRHELLike ">10.1" ; then
             rlAssertNotGrep "WARNING: /var/aide-testing-dir/aide.db.new.gz: gnutls_hash_init (stribog256) failed for '/var/aide-testing-dir/aide.db.new.gz'" $rlRun_LOG
             rlAssertNotGrep "WARNING: /var/aide-testing-dir/aide.db.new.gz: gnutls_hash_init (stribog512) failed for '/var/aide-testing-dir/aide.db.new.gz'" $rlRun_LOG

@@ -120,13 +120,25 @@ Returns 0 when the initialization was successful.
 
 aideInit() {
     local CONF="$__INTERNAL_aideConfDefault"
-    [ "$1" == "-c" ] && CONF="$2"
+    local NO_MV=false
+    local AIDE_OPTS=""
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -c) CONF="$2"; shift 2;;
+            --no-mv) NO_MV=true; shift;;
+            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+        esac
+    done
+
     aideGetDbPaths "$CONF" || return 1
-    rlLogInfo "AIDE database initialization with config $CONF"
-    aide -i -c "$CONF" || { rlLogError "AIDE database initialization failed"; return 1; }
-    [ -f "$DBnew" ] || { rlLogError "New database is not initialized"; return 1; }
-    [ -n "$DB" ] || { rlLogError "Database path is not set correctly"; return 1; }
-    mv "${DBnew}" "${DB}" || { rlLogError "Failed to move new database to ${DB}"; return 1; }
+    aide -i -c "$CONF" $AIDE_OPTS || return $?
+
+    if ! $NO_MV; then
+        [ -f "$DBnew" ] || { rlLogError "New database is not initialized"; return 1; }
+        [ -n "$DB" ] || { rlLogError "Database path is not set correctly"; return 1; }
+        mv "${DBnew}" "${DB}" || { rlLogError "Failed to move new database to ${DB}"; return 1; }
+    fi
     return 0
 }
 

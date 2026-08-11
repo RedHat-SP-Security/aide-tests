@@ -50,6 +50,7 @@ rlJournalStart && {
                     rlRun "cat /var/log/aide/aide-migrate.log" 0 \
                         "Show automatic migration log from %post"
                 fi
+                # aide called directly - config-check is a different command
                 rlRun "aide --config-check -c /etc/aide.conf" 0 \
                     "Default config must be valid after package upgrade"
             fi
@@ -84,7 +85,7 @@ rlJournalStart && {
   rlPhaseEnd; }
 
   rlPhaseStartTest "aide check" && {
-    rlRun -s "aide --check -c $AIDE_TEST_DIR/aide.conf" 0-255
+    rlRun -s "aideCheck -c $AIDE_TEST_DIR/aide.conf" 0-255
     if rlIsRHELLike "<9.8" ; then
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file1; removed" $rlRun_LOG
       rlAssertGrep "file=$AIDE_TEST_DIR/data/file2;SHA256_old=O7Krtp67J/v+Y8djliTG7F4zG4QaW8jD68ELkoXpCHc=;SHA256_new=wM3nf6j++X1HbBCq09LVT8wvM2FA0HNlHC3Mzx43n9Y=" $rlRun_LOG
@@ -123,12 +124,12 @@ rlJournalStart && {
 
     rlPhaseStartTest "aide --init with 4 workers is faster than with 1 worker" && {
       T_START=$(date +%s%3N)
-      rlRun "aide --init -W 1" 0 "aide --init with 1 worker"
+      rlRun "aideInit --no-mv -W 1" 0 "aide --init with 1 worker"
       T1=$(( $(date +%s%3N) - T_START ))
       rlLog "Time with 1 worker: ${T1} ms"
 
       T_START=$(date +%s%3N)
-      rlRun "aide --init -W 4" 0 "aide --init with 4 workers"
+      rlRun "aideInit --no-mv -W 4" 0 "aide --init with 4 workers"
       T4=$(( $(date +%s%3N) - T_START ))
       rlLog "Time with 4 workers: ${T4} ms"
 

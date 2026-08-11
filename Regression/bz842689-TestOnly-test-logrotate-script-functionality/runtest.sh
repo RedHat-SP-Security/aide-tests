@@ -57,12 +57,12 @@ rlJournalStart
         rlRun "cp $AIDE_FIRST_CONF $AIDE_CONFIG"
         rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "cp $AIDE_SECOND_CONF $AIDE_CONFIG"
-        rlRun "aide --init"
+        rlRun "aideInit --no-mv" 0
     rlPhaseEnd
 
     rlPhaseStartTest
         # Generate some logs and check them
-        rlRun "aide --check" 1-2 "New files reported or removed"
+        rlRun "aideCheck" 1-2 "New files reported or removed"
         rlAssertGrep "AIDE found differences between database and filesystem!!" $AIDE_LOG
         #The test cannot be executed too closely to the end of a minute, otherwise
         #+cron manage to rotate the aide logs twice and the test will fail
@@ -93,7 +93,7 @@ EOF"
         tail -50 /var/log/cron
 
         # Generate some logs and check them again
-        rlRun "aide --check" 1-2 "New files reported or removed"
+        rlRun "aideCheck" 1-2 "New files reported or removed"
         rlRun "sleep 2"
         rlRun -s "cat $AIDE_LOG"
          # check that new message has been logged

@@ -52,7 +52,7 @@ rlJournalStart
         rlPhaseStartTest "Check aide check after logrotate execution"
             rlRun "logrotate -f /etc/logrotate.conf"
             rlRun "aideInit -c aide.conf" 0 "AIDE database initialization"
-            rlRun -s "aide --config=aide.conf --check"
+            rlRun -s "aideCheck -c aide.conf"
             rlAssertNotGrep "File: /var/log/wtmp" $rlRun_LOG
             rlRun "rm -rf /var/aide-testing-dir/aide.db.gz"
             rlRun "touch $COOKIE"
@@ -70,7 +70,7 @@ rlJournalStart
             rlRun "systemctl is-system-running --wait" 0-1 "Wait for system to fully boot"
             rlRun "journalctl --rotate"
             rlRun "aideInit -c aide.conf" 0 "AIDE database initialization"
-            rlRun -s "aide --config=aide.conf --check"
+            rlRun -s "aideCheck -c aide.conf"
             rlAssertNotGrep "/var/log/journal" $rlRun_LOG
         rlPhaseEnd
 

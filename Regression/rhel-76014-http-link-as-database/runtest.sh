@@ -73,7 +73,7 @@ EOF
 
     rlPhaseStartTest
         rlLog "Initializing AIDE database locally..."
-        rlRun "aide --config=aide.conf --init" 0 "AIDE initialization"    
+        rlRun "aideInit --no-mv -c aide.conf" 0 "AIDE initialization"
         rlRun "mv aide.db.new.txt aide.db.txt"
         HTTPS_URL="https:\/\/localhost:8443\/aide.db.txt"
         rlLog "Using sed to adjust aide.conf to use URL: $HTTPS_URL"

@@ -43,6 +43,7 @@ rlJournalStart
         rlRun "rlFileBackup --clean --namespace mainBackup ${AIDE_CONF}"
         rlRun "aidePrepareConfig ${AIDE_CONF}" 0 "Prepare aide config for testing"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
+        # aide called directly - config-check is a different command
         rlRun "aide --config-check" 0 "No harm on changing config - cleaning config"
     rlPhaseEnd
 
@@ -52,12 +53,13 @@ rlJournalStart
 
         rlRun "echo \"${AIDE_TEST_DIR}/myRoot/ CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding regular selection line"
         rlRun "tail -1 ${AIDE_CONF}" 0 "Listing AIDE config"
+        # aide called directly - config-check is a different command
         rlRun "aide --config-check" 0 "No harm on changing config - adding regular selection line"
         rlRun "aideInit" 0 "AIDE database initialization"
         rlRun "aideCheck" 0
 
         rlRun "touch myRoot/untrackedFile"
-        rlRun "aide" 1 "Finding untracked file"
+        rlRun "aideCheck" 1 "Finding untracked file"
         rlRun "rm myRoot/untrackedFile"
     rlPhaseEnd
 
@@ -65,6 +67,7 @@ rlJournalStart
         rlRun "mkdir myRoot/dirNotCheck"
         rlRun "echo \"!${AIDE_TEST_DIR}/myRoot/dirNotCheck/\" >> ${AIDE_CONF}" 0 "Adding negative selection line"
         rlRun "tail -2 ${AIDE_CONF}" 0 "Listing AIDE config"
+        # aide called directly - config-check is a different command
         rlRun "aide --config-check" 0 "No harm on changing config - adding negative selection line"
 
         rlRun "aideInit" 0 "AIDE database initialization"
@@ -78,6 +81,7 @@ rlJournalStart
         rlRun "mkdir dirCheckJustThis"
         rlRun "echo \"=${AIDE_TEST_DIR}/dirCheckJustThis CONTENTEX\" >> ${AIDE_CONF}" 0 "Adding equals selection line"
         rlRun "tail -3 ${AIDE_CONF}" 0 "Listing AIDE config"
+        # aide called directly - config-check is a different command
         rlRun "aide --config-check" 0 "No harm on changing config - adding equals selection line"
 
         rlRun "aideInit" 0 "AIDE database initialization"
@@ -85,7 +89,7 @@ rlJournalStart
 
         rlRun "rlFileBackup --clean --namespace chmodChange dirCheckJustThis"
         rlRun "chmod 777 dirCheckJustThis" 0 "Make configuration change on tracked directory"
-        rlRun "aide" 4 "Find changed file"
+        rlRun "aideCheck" 4 "Find changed file"
         rlRun "rlFileRestore --namespace chmodChange"
 
         rlRun "aideCheck" 0

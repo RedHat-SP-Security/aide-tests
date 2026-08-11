@@ -56,7 +56,7 @@ rlJournalStart
         rlRun "echo blah blah >> data/permSizeCheck/testFile" 0 "Change test file"
         rlRun "chmod 777 data/permSizeCheck/testFile" 0 "Change permission"
 
-        rlRun -s "aide -c $TmpDir/$AIDE_CONFIG" 4 "File changed check"
+        rlRun -s "aideCheck -c $TmpDir/$AIDE_CONFIG" 4 "File changed check"
         rlAssertGrep "^  Added .*:[[:space:]]*0" $rlRun_LOG -E
         rlAssertGrep "^  Changed .*:[[:space:]]*2" $rlRun_LOG -E
         rlAssertGrep ":[[:space:]]*${TmpDir}/data/testFile" $rlRun_LOG -E

@@ -44,13 +44,14 @@ rlJournalStart
         rlRun "pushd $TmpDir"
 	rlRun "sed 's%AIDE_DIR%$TmpDir%g' $TESTDIR/$AIDE_CONFIG > $TmpDir/$AIDE_CONFIG" 0 "Prepare aide.conf file"
 	rlRun "mkdir -p data log db"
-	rlRun "aide -i -c $TmpDir/$AIDE_CONFIG"
+	rlRun "aideInit --no-mv -c $TmpDir/$AIDE_CONFIG" 0
 	rlRun "cp -p db/aide.db.out.gz db/aide.db.gz"
 	rlRun "cp -p db/aide.db.out.gz db/aide.db.new.gz"
     rlPhaseEnd
 
     rlPhaseStartTest "testing aide --update"
         rlRun "touch data/foo" 0 "Creating the data/foo test file"
+	# aide called directly - update is a different command
 	rlRun -s "aide --update -c $TmpDir/$AIDE_CONFIG" 1
     if rlIsRHEL '<=7'; then
 	    rlAssertGrep "added: $TmpDir/data/foo" $rlRun_LOG
@@ -63,6 +64,7 @@ rlJournalStart
     rlPhaseStartTest "testing aide --compare"
         rlRun "mv db/aide.db.out.gz db/aide.db.gz" 0 "Use the updated aide db file"
 	rlLogInfo "Using the original db as the NEW one, aide should report the test file as removed"
+	# aide called directly - compare is a different command
 	rlRun -s "aide --compare -c $TmpDir/$AIDE_CONFIG" 2
     if rlIsRHEL '<=7'; then
 	    rlAssertGrep "removed: $TmpDir/data/foo" $rlRun_LOG

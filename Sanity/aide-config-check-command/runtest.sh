@@ -41,11 +41,13 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking the default /etc/aide.conf should succeed"
+        # aide called directly - config-check is a different command
         rlRun "aide -D"
         rlRun "aide --config-check"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking the faulty configuration file"
+        # aide called directly - config-check is a different command
         rlRun -s "aide -D -c $TmpDir/aide.conf" 17
         rlRun "cat $rlRun_LOG"
         if rlIsRHELLike "<9.8" ; then
@@ -60,6 +62,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Passing non-existing filepath"
+        # aide called directly - config-check is a different command
         rlRun -s "aide -D -c /nosuchfile" 17,18
         rlRun "cat $rlRun_LOG"
 	      if rlIsRHELLike "<9.8"; then
