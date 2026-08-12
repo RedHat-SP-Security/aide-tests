@@ -200,14 +200,16 @@ Returns aide exit code.
 
 aideConfigCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
+    local CMD="--config-check"
     local -a AIDE_OPTS=()
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
+            -D) CMD="-D"; shift;;
             *) AIDE_OPTS+=("$1"); shift;;
         esac
     done
-    aide --config-check -c "$CONF" "${AIDE_OPTS[@]}"
+    aide $CMD -c "$CONF" "${AIDE_OPTS[@]}"
 }
 
 

@@ -42,8 +42,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Checking the default /etc/aide.conf should succeed"
-        # aide called directly - testing -D short flag format
-        rlRun "aide -D"
+        rlRun "aideConfigCheck -D"
         rlRun "aideConfigCheck"
     rlPhaseEnd
 
