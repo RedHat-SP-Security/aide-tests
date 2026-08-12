@@ -336,7 +336,7 @@ Returns aide exit code.
 
 aideAsUser() {
     local USER="$1"; shift
-    su -c "/usr/sbin/aide $*" - "$USER"
+    su -c "aide $*" - "$USER"
 }
 
 
