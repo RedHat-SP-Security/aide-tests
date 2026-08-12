@@ -131,10 +131,10 @@ aideInit() {
         esac
     done
 
-    aideGetDbPaths "$CONF" || return 1
     aide -i -c "$CONF" $AIDE_OPTS || return $?
 
     if ! $NO_MV; then
+        aideGetDbPaths "$CONF" || return 1
         [ -f "$DBnew" ] || { rlLogError "New database is not initialized"; return 1; }
         [ -n "$DB" ] || { rlLogError "Database path is not set correctly"; return 1; }
         mv "${DBnew}" "${DB}" || { rlLogError "Failed to move new database to ${DB}"; return 1; }
