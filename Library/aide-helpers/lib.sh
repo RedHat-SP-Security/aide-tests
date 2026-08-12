@@ -308,6 +308,38 @@ aideRun() {
 }
 
 
+true <<'=cut'
+=pod
+
+=head2 aideAsUser
+
+Run aide as a specific user via su. Use when aide needs to run
+as a non-root user for permission testing.
+
+    aideAsUser USER [AIDE_ARGS...]
+
+=over
+
+=item USER
+
+Username to run aide as.
+
+=item AIDE_ARGS
+
+Any arguments to pass to aide.
+
+=back
+
+Returns aide exit code.
+
+=cut
+
+aideAsUser() {
+    local USER="$1"; shift
+    su -c "/usr/sbin/aide $*" - "$USER"
+}
+
+
 # ~~~~~~~~~~~~~~~~~~~~
 #   Config management
 # ~~~~~~~~~~~~~~~~~~~~
