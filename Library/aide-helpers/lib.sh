@@ -121,17 +121,17 @@ Returns 0 when the initialization was successful.
 aideInit() {
     local CONF="$__INTERNAL_aideConfDefault"
     local NO_MV=false
-    local AIDE_OPTS=""
+    local -a AIDE_OPTS=()
 
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
             --no-mv) NO_MV=true; shift;;
-            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+            *) AIDE_OPTS+=("$1"); shift;;
         esac
     done
 
-    aide -i -c "$CONF" $AIDE_OPTS || return $?
+    aide -i -c "$CONF" "${AIDE_OPTS[@]}" || return $?
 
     if ! $NO_MV; then
         aideGetDbPaths "$CONF" || return 1
@@ -166,14 +166,14 @@ Returns 0 when the check was successful.
 
 aideCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
-    local AIDE_OPTS=""
+    local -a AIDE_OPTS=()
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
-            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+            *) AIDE_OPTS+=("$1"); shift;;
         esac
     done
-    aide --check -c "$CONF" $AIDE_OPTS
+    aide --check -c "$CONF" "${AIDE_OPTS[@]}"
 }
 
 
@@ -200,14 +200,14 @@ Returns aide exit code.
 
 aideConfigCheck() {
     local CONF="$__INTERNAL_aideConfDefault"
-    local AIDE_OPTS=""
+    local -a AIDE_OPTS=()
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
-            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+            *) AIDE_OPTS+=("$1"); shift;;
         esac
     done
-    aide --config-check -c "$CONF" $AIDE_OPTS
+    aide --config-check -c "$CONF" "${AIDE_OPTS[@]}"
 }
 
 
@@ -234,14 +234,14 @@ Returns aide exit code.
 
 aideUpdate() {
     local CONF="$__INTERNAL_aideConfDefault"
-    local AIDE_OPTS=""
+    local -a AIDE_OPTS=()
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
-            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+            *) AIDE_OPTS+=("$1"); shift;;
         esac
     done
-    aide --update -c "$CONF" $AIDE_OPTS
+    aide --update -c "$CONF" "${AIDE_OPTS[@]}"
 }
 
 
@@ -268,14 +268,14 @@ Returns aide exit code.
 
 aideCompare() {
     local CONF="$__INTERNAL_aideConfDefault"
-    local AIDE_OPTS=""
+    local -a AIDE_OPTS=()
     while [ $# -gt 0 ]; do
         case "$1" in
             -c) CONF="$2"; shift 2;;
-            *) AIDE_OPTS="$AIDE_OPTS $1"; shift;;
+            *) AIDE_OPTS+=("$1"); shift;;
         esac
     done
-    aide --compare -c "$CONF" $AIDE_OPTS
+    aide --compare -c "$CONF" "${AIDE_OPTS[@]}"
 }
 
 
