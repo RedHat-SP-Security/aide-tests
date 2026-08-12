@@ -42,6 +42,7 @@ function checkUpdateAide {
 rlJournalStart
     rlPhaseStartSetup
         rlRun "rlImport --all" || rlDie 'cannot continue'
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE || rlDie 'cannot continue'
         rlRun "mkdir -p $TEST_DIR/{,data,db,log}"
         rlRun "cp $AIDE_CONFIG $TEST_DIR/aide.conf"
