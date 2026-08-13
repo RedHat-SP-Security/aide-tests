@@ -36,6 +36,7 @@ WATCH_DIR="/tmp/aide-dropin-test-dir"
 
 rlJournalStart && {
   rlPhaseStartSetup && {
+    rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
     rlAssertRpm $PACKAGE
     rlRun "rlFileBackup --clean /etc/aide.d"
     rlRun "rlFileBackup --clean /var/lib/aide"
@@ -63,13 +64,11 @@ rlJournalStart && {
 
   rlPhaseStartTest "Drop-in .conf file is loaded and its rules take effect" && {
     rlRun "echo '$WATCH_DIR p+i+n+u+g+s+sha256' > $DROPIN_CONF"
-    rlRun "aide --config-check" 0 \
+    rlRun "aideConfigCheck" 0 \
       "Config must be valid with the drop-in present"
-    rlRun "aide --init" 0 "Initialize aide database with drop-in rule active"
-    rlRun "mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz" 0 \
-      "Promote newly initialized database"
+    rlRun "aideInit" 0 "AIDE database initialization"
     rlRun "echo 'modified content' > $WATCH_DIR/testfile"
-    rlRun -s "aide --check" 4 \
+    rlRun -s "aideCheck" 4 \
       "aide must detect changes in the drop-in monitored directory"
     rlAssertGrep "$WATCH_DIR/testfile" $rlRun_LOG
     rm -f $rlRun_LOG
@@ -78,20 +77,20 @@ rlJournalStart && {
   rlPhaseStartTest "Drop-in .conf file with improper permissions is rejected" && {
     rlRun "chmod 0666 $DROPIN_CONF" 0 \
       "Make drop-in world-writable (improper permissions)"
-    rlRun "aide --config-check" 17 \
+    rlRun "aideConfigCheck" 17 \
       "aide must reject a world-writable drop-in during config check"
-    rlRun "aide --init" 17 \
+    rlRun "aideInit --no-mv" 17 \
       "aide --init must fail when drop-in is world-writable"
-    rlRun "aide --check" 17 \
+    rlRun "aideCheck" 17 \
       "aide --check must fail when drop-in is world-writable"
 
     rlRun "chmod 0660 $DROPIN_CONF" 0 \
       "Make drop-in group-writable (improper permissions)"
-    rlRun "aide --config-check" 17 \
+    rlRun "aideConfigCheck" 17 \
       "aide must reject a group-writable drop-in during config check"
-    rlRun "aide --init" 17 \
+    rlRun "aideInit --no-mv" 17 \
       "aide --init must fail when drop-in is group-writable"
-    rlRun "aide --check" 17 \
+    rlRun "aideCheck" 17 \
       "aide --check must fail when drop-in is group-writable"
 
     rlRun "chmod 0600 $DROPIN_CONF" 0 "Restore proper permissions"
@@ -99,7 +98,7 @@ rlJournalStart && {
 
   rlPhaseStartTest "Non-.conf files in /etc/aide.d/ are silently ignored" && {
     rlRun "echo 'THIS IS NOT VALID AIDE CONFIG' > /etc/aide.d/ignore-me.bak"
-    rlRun "aide --config-check" 0 \
+    rlRun "aideConfigCheck" 0 \
       "aide must not attempt to parse non-.conf files in /etc/aide.d"
   rlPhaseEnd; }
 

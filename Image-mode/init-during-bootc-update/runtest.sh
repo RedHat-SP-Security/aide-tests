@@ -39,6 +39,7 @@ rlJournalStart
 
   if [ ! -e $COOKIE ]; then
     rlPhaseStartSetup "pre-reboot phase"
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlRun "rlFileBackup --clean $AIDE_TEST_DIR"
         rlRun "mkdir -p $AIDE_TEST_DIR/{,data,db,log}"
         rlRun "cp $AIDE_CONF $AIDE_TEST_DIR/aide.conf"
@@ -82,7 +83,7 @@ rlJournalStart
         fi
         rm -f $rlRun_LOG
         rlRun "bootc switch --transport containers-storage localhost/test"
-        rlRun "aide -i -c $AIDE_TEST_DIR/aide.conf"
+        rlRun "aideInit --no-mv -c $AIDE_TEST_DIR/aide.conf" 0
         rlRun "touch $COOKIE"
     rlPhaseEnd
 
@@ -90,12 +91,13 @@ rlJournalStart
 
   else
     rlPhaseStartTest "post-reboot phase - check aide after update of system, that working in runtime mode"
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlRun "mv -f $AIDE_TEST_DIR/db/aide.db.new.gz $AIDE_TEST_DIR/db/aide.db.gz"
         rlRun "echo 'A' > $AIDE_TEST_DIR/data/file4"
         rlRun "rm -f $AIDE_TEST_DIR/data/file1"
         rlRun "echo 'B' > $AIDE_TEST_DIR/data/file2"
         rlRun "chmod a+x $AIDE_TEST_DIR/data/file3"
-        rlRun -s "aide --check -c $AIDE_TEST_DIR/aide.conf" 0-255
+        rlRun -s "aideCheck -c $AIDE_TEST_DIR/aide.conf" 0-255
         if rlIsRHELLike "<9.8" ; then
             rlAssertGrep "f----------------: $AIDE_TEST_DIR/data/file1" $rlRun_LOG
             rlAssertGrep "f++++++++++++++++: $AIDE_TEST_DIR/data/file4" $rlRun_LOG

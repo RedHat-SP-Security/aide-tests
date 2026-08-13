@@ -38,6 +38,7 @@ PACKAGE="aide"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
 	rlServiceStart rsyslog
@@ -54,8 +55,7 @@ rlJournalStart
 	rlRun "echo hello > $TmpDir/data/to_be_modified"
 	rlRun "touch $TmpDir/data/to_be_removed"
 	# initialize aide
-	rlRun "aide -c $TmpDir/aide.conf -i" 0 "Initializing aide database"
-        rlRun "cp $TmpDir/db/aide.db.new $TmpDir/db/aide.db" 0 "Save aide database"
+	rlRun "aideInit -c $TmpDir/aide.conf" 0 "AIDE database initialization"
 	# modify data
 	rlRun "echo bye > $TmpDir/data/to_be_modified"
 	rlRun "rm $TmpDir/data/to_be_removed"
@@ -65,7 +65,8 @@ rlJournalStart
 	SYSLOG_LENGTH=$( cat /var/log/messages | wc -l)
         [ $SYSLOG_LENGTH == 0 ] && SYSLOG_LENGTH=1 
 	rlRun "exec 5>$TmpDir/fd5" 0 "Attach file descriptor 5 to $TmpDir/fd5"
-	rlRun "rm -f $AIDE_LOG && aide -c $TmpDir/aide.conf > $TmpDir/stdout 2> $TmpDir/stderr" 7 "Run aide verification"
+	rlRun "rm -f $AIDE_LOG" 0 "Remove old log file"
+	rlRun "aideCheck -c $TmpDir/aide.conf > $TmpDir/stdout 2> $TmpDir/stderr" 7 "Run aide verification"
 	sleep 2
 	rlRun "sed -n '$SYSLOG_LENGTH,\$ p' /var/log/messages > $TmpDir/syslog" 0 "Extracting the new syslog content"
     rlPhaseEnd

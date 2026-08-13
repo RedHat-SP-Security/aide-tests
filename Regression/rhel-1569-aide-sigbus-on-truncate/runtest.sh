@@ -37,6 +37,7 @@ AIDE_LOG="aide_output.log"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlLog "Setting up the test environment..."
         rlRun "mkdir -p $AIDE_TEST_DIR"
         pushd $AIDE_TEST_DIR
@@ -55,8 +56,7 @@ rlJournalStart
 
     rlPhaseStartTest "AIDE should handle file truncation gracefully"
         rlLog "Starting 'aide --init' in the background..."
-        # Run aide in the background, redirecting all output to a log file
-        aide --config=$AIDE_CONF --init &> $AIDE_LOG 2>&1 &
+        aideInit --no-mv -c "$AIDE_CONF" &> $AIDE_LOG 2>&1 &
         AIDE_PID=$!
         rlLog "AIDE process started with PID: $AIDE_PID"
         # race condition

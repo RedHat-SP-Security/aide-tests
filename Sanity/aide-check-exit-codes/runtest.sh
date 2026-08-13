@@ -32,71 +32,42 @@
 PACKAGE="aide"
 AIDE_CONF="/etc/aide.conf"
 
-DBDIR=$(sed -n -e 's/@@define DBDIR \([a-z/]\+\)/\1/p' "$AIDE_CONF")
-if rlIsRHELLike "=<9.7"; then
-  DB=$(grep "^database=" "$AIDE_CONF" | cut -d/ -f2-)
-else
-  DB=$(grep "^database_in=" "$AIDE_CONF" | cut -d/ -f2-)
-fi
-DB="${DBDIR}/${DB}"
-
-DBnew=$(grep "^database_out=" "$AIDE_CONF" | cut -d/ -f2-)
-DBnew="${DBDIR}/${DBnew}"
-
-aideInit() {
-    rlRun -s "aide -i" 0 "AIDE database initialization"
-    [ -f "$DBnew" ] || rlFail "New database is not initialized"
-    [ -n "$DB" ] || rlFail "Database path is not set correctly"
-
-    rlRun "mv ${DBnew} ${DB}" 0 "Move new AIDE initialed database to the place of the default one."
-    rlRun "rm $rlRun_LOG"
-}
-
-aideCheck() {
-    rlRun -s "aide" 0 "Checking default behaviour -- database check"
-    rlAssertGrep "Looks okay!" $rlRun_LOG
-    rlRun "rm $rlRun_LOG"
-}
-
 rlJournalStart
     rlPhaseStartSetup "Temp directory creation"
+        rlRun 'rlImport "./aide-helpers"' || rlDie "cannot import aide-helpers library"
         rlAssertRpm $PACKAGE
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
         rlRun "rlFileBackup --clean ${AIDE_CONF}"
-        rlRun "sed -i '/^[/!#]/d' ${AIDE_CONF}" 0 "Delete all paths and comments in aide config"
-
-        if ! grep -q -e 'CONTENTEX' ${AIDE_CONF}; then
-            rlRun "echo \"CONTENTEX = sha256+ftype+p+u+g+n+acl+selinux+xattrs\" >> ${AIDE_CONF}" 0 "Adding CONTENT_EX group"
-        fi
+        rlRun "aidePrepareConfig ${AIDE_CONF}" 0 "Prepare aide config for testing"
         AIDE_TEST_DIR="/var/aide-testing-dir"
         rlRun "mkdir -p $AIDE_TEST_DIR"
         rlAssertGrep 'CONTENTEX' ${AIDE_CONF}
         rlRun "echo '$AIDE_TEST_DIR/ CONTENTEX' >> ${AIDE_CONF}" 0 "Add just one path aide the config"
-        rlRun "aide --config-check" 0 "No harm on changing config"
+        rlRun "aideConfigCheck" 0 "No harm on changing config"
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 1 (new files detected)"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
-        rlRun -s "aide" 1 "Recheck consistency between database and filesystem"
+        rlRun -s "aideCheck" 1 "Recheck consistency between database and filesystem"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlAssertGrep ":\t*1" $rlRun_LOG -P
         rlRun "rm $rlRun_LOG"
 
         rlRun "rm ${testingFile}"
-        aideCheck
+        rlRun "aideCheck" 0
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 2 (removed files detected)"
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "rm ${testingFile}"
-        rlRun -s "aide" 2 "Recheck consistency -- one file is missing"
+        rlRun -s "aideCheck" 2 "Recheck consistency -- one file is missing"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlAssertGrep ":\t*1" $rlRun_LOG -P
         rlRun "rm $rlRun_LOG"
@@ -104,17 +75,17 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 4 (changed files detected)"
         rlRun "testingFile=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add new temporary file - cannot be in /tmp"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "echo 'test data' > ${testingFile}" 0 "Overwriting testing file"
-        rlRun -s "aide" 4 "Recheck consistency -- one file is changed"
+        rlRun -s "aideCheck" 4 "Recheck consistency -- one file is changed"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlAssertGrep ":\t*1" $rlRun_LOG -P
         rlRun "rm $rlRun_LOG"
 
         rlRun "> ${testingFile}" 0 "Clearing testing file"
-        aideCheck
+        rlRun "aideCheck" 0
 
         rlRun "rm ${testingFile}"
     rlPhaseEnd
@@ -122,12 +93,12 @@ rlJournalStart
     if ! rlIsFedora || rlIsFedora ">=45"; then
     rlPhaseStartTest "Checking exit code 3 (added + removed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
-        rlRun -s "aide" 3 "Recheck -- one added, one removed"
+        rlRun -s "aideCheck" 3 "Recheck -- one added, one removed"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlRun "rm $rlRun_LOG"
 
@@ -136,12 +107,12 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 5 (added + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B - will be new since last init"
         rlRun "echo 'test data' > ${testingFileA}" 0 "Modify file A - was in database"
-        rlRun -s "aide" 5 "Recheck -- one added, one changed"
+        rlRun -s "aideCheck" 5 "Recheck -- one added, one changed"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlRun "rm $rlRun_LOG"
 
@@ -151,12 +122,12 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 6 (removed + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
         rlRun "echo 'test data' > ${testingFileB}" 0 "Modify file B - was in database"
-        rlRun -s "aide" 6 "Recheck -- one removed, one changed"
+        rlRun -s "aideCheck" 6 "Recheck -- one removed, one changed"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlRun "rm $rlRun_LOG"
 
@@ -166,13 +137,13 @@ rlJournalStart
     rlPhaseStartTest "Checking exit code 7 (added + removed + changed files detected)"
         rlRun "testingFileA=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file A to watch dir"
         rlRun "testingFileB=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file B to watch dir"
-        aideInit
-        aideCheck
+        rlRun "aideInit" 0 "AIDE database initialization"
+        rlRun "aideCheck" 0
 
         rlRun "testingFileC=\$(mktemp --tmpdir=$AIDE_TEST_DIR)" 0 "Add file C - will be new since last init"
         rlRun "rm ${testingFileA}" 0 "Remove file A - was in database"
         rlRun "echo 'test data' > ${testingFileB}" 0 "Modify file B - was in database"
-        rlRun -s "aide" 7 "Recheck -- one added, one removed, one changed"
+        rlRun -s "aideCheck" 7 "Recheck -- one added, one removed, one changed"
         rlAssertGrep "found differences between database and filesystem" $rlRun_LOG
         rlRun "rm $rlRun_LOG"
 
@@ -181,7 +152,7 @@ rlJournalStart
     fi
 
     rlPhaseStartTest "Checking exit code 15 (Invalid argument error)"
-        rlRun "aide blahblah" 15
+        rlRun "aideRun blahblah" 15
     rlPhaseEnd
 
     rlPhaseStartTest "Checking exit code 16 (Unimplemented function error)"
@@ -190,8 +161,8 @@ rlJournalStart
 
     rlPhaseStartTest "Checking exit code 18 (IO error)"
         rlRun "rm ${DB}" 0 "Removing AIDE datbase for testing purpose"
-        rlRun "aide" 18
-        aideInit
+        rlRun "aideCheck" 18
+        rlRun "aideInit" 0 "AIDE database initialization"
     rlPhaseEnd
 
     rlPhaseStartCleanup
