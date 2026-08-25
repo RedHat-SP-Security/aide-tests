@@ -34,3 +34,4 @@ adjust:
   - enabled: false
     when: distro == fedora
     because: aide-migrate-config is not shipped in Fedora
+id: e309c3e5-88b3-4ec4-8ebb-1ab5dc1f02ba

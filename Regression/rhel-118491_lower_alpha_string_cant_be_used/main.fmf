@@ -1,4 +1,5 @@
-summary: Scenario to check that lower alpha string can be used in AIDE configuration
+summary: Scenario to check that lower alpha string can be used in AIDE 
+    configuration
 description: |
     Verify that aide accepts lowercase alphabetic strings as custom group
     names in configuration and correctly initializes and checks the
@@ -21,3 +22,4 @@ adjust:
   - enabled: false
     when: distro < rhel-9.8 or distro < fedora-rawhide
     continue: false
+id: 3fa1fbe0-061b-4b45-ba88-7ac7a82ba848
