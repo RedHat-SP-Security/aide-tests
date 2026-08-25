@@ -21,3 +21,4 @@ adjust:
   - enabled: false
     when: distro < rhel-9.8 or distro < fedora-rawhide
     continue: false
+id: 73440fb6-bec5-4d61-b20e-fc74c705fe9c
