@@ -1,0 +1,22 @@
+summary: Test for RHEL-141678 - aide multi-threading performance regression
+description: |
+    Bug: https://issues.redhat.com/browse/RHEL-141678
+    This test verifies that the default multi-threading in AIDE does not
+    cause a significant performance regression during database initialization.
+    It measures the execution time of `aide --init` with and without the `-W 0`
+    option and asserts that the multi-threaded run is not significantly
+    slower than the single-threaded run.
+contact: QE Automation <sec-eng-special@redhat.com>
+test: ./runtest.sh
+framework: beakerlib
+recommend:
+    - aide
+duration: 10m
+tag:
+    - Tier1
+    - Tier1security
+    - Regression
+adjust:
+    - enabled: false
+      when: distro < rhel-10.3
+      continue: false
