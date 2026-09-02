@@ -122,6 +122,11 @@ rlJournalStart && {
     rlPhaseEnd; }
 
     rlPhaseStartTest "aide --init with 4 workers is faster than with 1 worker" && {
+      PERF_DIR=$(mktemp -d /opt/aide-perf-XXXXXX)
+      rlLog "Generating test dataset in $PERF_DIR"
+      for i in $(seq 1 200000); do echo "aide perf test file $i" > "$PERF_DIR/$i"; done
+      rlLog "Created $(ls $PERF_DIR | wc -l) test files"
+
       T_START=$(date +%s%3N)
       rlRun "aideInit --no-mv -W 1" 0 "aide --init with 1 worker"
       T1=$(( $(date +%s%3N) - T_START ))
@@ -132,6 +137,7 @@ rlJournalStart && {
       T4=$(( $(date +%s%3N) - T_START ))
       rlLog "Time with 4 workers: ${T4} ms"
 
+      rlRun "rm -rf $PERF_DIR"
       rlRun "[[ $T4 -lt $T1 ]]" 0 \
         "4 workers (${T4}ms) must be faster than 1 worker (${T1}ms)"
     rlPhaseEnd; }
