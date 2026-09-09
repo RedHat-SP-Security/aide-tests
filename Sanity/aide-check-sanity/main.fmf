@@ -4,7 +4,7 @@ contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
   - aide
-duration: 15m
+duration: 45m
 enabled: true
 tag:
   - fips

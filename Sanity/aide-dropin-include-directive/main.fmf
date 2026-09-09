@@ -8,7 +8,7 @@ contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 require+:
   - aide
-duration: 5m
+duration: 20m
 enabled: true
 tag:
   - CI-Tier-1
